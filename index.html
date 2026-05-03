@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pretty Cool Resume Builder. craft tailored resumes with AI-powered suggestions">
+    <title>Pretty Cool Resume Builder</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <!-- Bootstrap CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons  -->
+    <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-dark">
+
+<!-- =====================================================
+     SIDEBAR 
+====================================================== -->
+<div id="sidebar" class="d-flex flex-column bg-dark text-white"
+     style="width:220px; height:100vh; position:fixed; top:0; left:0; z-index:100; border-right:1px solid rgba(255,255,255,0.15);">
+
+    <!-- Brand -->
+    <div class="p-3 border-bottom border-secondary text-center">
+        <p class="fw-bold text-white fs-6 mb-0">Pretty Cool</p>
+        <p class="fw-bold text-info fs-6 mb-0">Resume Builder</p>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="flex-grow-1 pt-2" aria-label="Main navigation">
+
+        <p class="text-uppercase text-secondary px-3 mt-2 mb-1 small">My Profile</p>
+        <a href="#" class="nav-link text-white px-3 py-2 d-flex align-items-center gap-2"
+           id="navPersonal" data-section="sectionPersonal"
+           style="border-left:3px solid #0dcaf0;" aria-current="page">
+            <i class="bi bi-person-circle" aria-hidden="true"></i> Personal Info
+        </a>
+
+        <p class="text-uppercase text-secondary px-3 mt-3 mb-1 small">Content</p>
+        <a href="#" class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2"
+           id="navJobs" data-section="sectionJobs" style="border-left:3px solid transparent;">
+            <i class="bi bi-briefcase" aria-hidden="true"></i> Work Experience
+        </a>
+        <a href="#" class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2"
+           id="navSkills" data-section="sectionSkills" style="border-left:3px solid transparent;">
+            <i class="bi bi-stars" aria-hidden="true"></i> Skills and Certifications
+        </a>
+        <a href="#" class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2"
+           id="navAwards" data-section="sectionAwards" style="border-left:3px solid transparent;">
+            <i class="bi bi-trophy" aria-hidden="true"></i> Awards
+        </a>
+
+        <p class="text-uppercase text-secondary px-3 mt-3 mb-1 small">Output</p>
+        <a href="#" class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2"
+           id="navPreview" data-section="sectionPreview" style="border-left:3px solid transparent;">
+            <i class="bi bi-file-earmark-person" aria-hidden="true"></i> Resume Preview
+        </a>
+
+        <p class="text-uppercase text-secondary px-3 mt-3 mb-1 small">App</p>
+        <a href="#" class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2"
+           id="navSettings" data-section="sectionSettings" style="border-left:3px solid transparent;">
+            <i class="bi bi-gear" aria-hidden="true"></i> Settings
+        </a>
+    </nav>
+
+    <!-- Attributions Footer -->
+    <div class="p-3 border-top border-secondary">
+        <button type="button" id="btnAttributions" class="btn btn-link text-secondary p-0 small"
+                aria-label="View open source library attributions">
+            <i class="bi bi-heart" aria-hidden="true"></i> Open Source Libraries
+        </button>
+    </div>
+</div>
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+<div id="mainContent" class="bg-light" style="margin-left:auto; min-height:100vh;">
+
+    <!-- ================================================
+         PERSONAL INFO – shown by default
+    ================================================= -->
+    <section id="sectionPersonal">
+        <div class="d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card col-11 col-md-9 col-lg-7 my-4">
+                <div class="card-body">
+                    <h2 class="text-center mb-2">
+                        <i class="bi bi-person-circle text-info me-2" aria-hidden="true"></i>Personal Information
+                    </h2>
+                    <p class="text-center text-muted mb-4">This info appears at the top of your resume.</p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label" for="txtFirstName">First Name</label>
+                            <input class="form-control mb-3" id="txtFirstName" type="text"
+                                   placeholder="Jane" autocomplete="given-name" aria-label="First name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="txtLastName">Last Name</label>
+                            <input class="form-control mb-3" id="txtLastName" type="text"
+                                   placeholder="Doe" autocomplete="family-name" aria-label="Last name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="txtEmail">Email</label>
+                            <input class="form-control mb-3" id="txtEmail" type="email"
+                                   placeholder="jane@example.com" autocomplete="email" aria-label="Email address">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="txtPhone">Phone</label>
+                            <input class="form-control mb-3" id="txtPhone" type="tel"
+                                   placeholder="(555) 000-0000" autocomplete="tel" aria-label="Phone number">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label" for="txtCity">City</label>
+                            <input class="form-control mb-3" id="txtCity" type="text"
+                                   placeholder="Cookeville" aria-label="City">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="cboState">State</label>
+                            <select class="form-select mb-3" id="cboState" aria-label="State">
+                                <option value="">Select a State</option>
+                                <option value="AL">Alabama</option><option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option><option value="AR">Arkansas</option>
+                                <option value="CA">California</option><option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option><option value="DE">Delaware</option>
+                                <option value="FL">Florida</option><option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option><option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option><option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option><option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option><option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option><option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option><option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option><option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option><option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option><option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option><option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option><option value="NY">New York</option>
+                                <option value="NC">North Carolina</option><option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option><option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option><option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option><option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option><option value="TN" selected>Tennessee</option>
+                                <option value="TX">Texas</option><option value="UT">Utah</option>
+                                <option value="VT">Vermont</option><option value="VA">Virginia</option>
+                                <option value="WA">Washington</option><option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option><option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="txtZip">ZIP</label>
+                            <input class="form-control mb-3" id="txtZip" type="text"
+                                   placeholder="38501" aria-label="ZIP code">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="txtLinkedIn">LinkedIn / Portfolio URL</label>
+                            <input class="form-control mb-3" id="txtLinkedIn" type="url"
+                                   placeholder="https://linkedin.com/in/janedoe" aria-label="LinkedIn or portfolio URL">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="txtSummary">Professional Summary</label>
+                            <textarea class="form-control mb-3" id="txtSummary" rows="4"
+                                      placeholder="Write a 2-3 sentence summary of your professional background and goals..."
+                                      aria-label="Professional summary"></textarea>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <button class="btn btn-primary col-12 mt-2" id="btnSavePersonal" type="button">
+                        <i class="bi bi-floppy me-1" aria-hidden="true"></i>Save
+                    </button>
+                    <button class="btn btn-secondary col-12 mt-2" id="btnAISummary" type="button">
+                        <i class="bi bi-magic me-1" aria-hidden="true"></i>AI Suggestion
+                    </button>
+
+                    <!-- AI Suggestion Box – hidden until AI returns a result -->
+                    <div id="aiSummaryBox" class="mt-3 p-3 rounded border border-info bg-info bg-opacity-10"
+                         style="display:none;" role="status" aria-live="polite">
+                        <span class="badge bg-info text-dark mb-2">AI Suggestion</span>
+                        <p id="aiSummaryText" class="mb-2"></p>
+                        <button class="btn btn-primary col-12 mt-2" id="btnAcceptSummary" type="button">
+                            Accept Suggestion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================
+         WORK EXPERIENCE – hidden by default
+    ================================================= -->
+    <section id="sectionJobs" style="display:none;">
+        <div class="d-flex justify-content-center align-items-start py-4 min-vh-100">
+            <div class="col-11 col-md-9 col-lg-7">
+
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-briefcase text-info me-2" aria-hidden="true"></i>Work Experience
+                </h2>
+
+                <!-- Add Job Form -->
+                <div class="card col-12 mb-4">
+                    <div class="card-body">
+                        <h3 class="text-center mb-4 fs-5">Add a Job</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label" for="txtJobTitle">Job Title</label>
+                                <input class="form-control mb-3" id="txtJobTitle" type="text"
+                                       placeholder="Software Engineer Intern" aria-label="Job title">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="txtCompany">Company</label>
+                                <input class="form-control mb-3" id="txtCompany" type="text"
+                                       placeholder="Acme Corp" aria-label="Company name">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="txtStartDate">Start Date</label>
+                                <input class="form-control mb-3" id="txtStartDate" type="text"
+                                       placeholder="MM/DD/YYYY" aria-label="Start date" maxlength="10">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="txtEndDate">End Date</label>
+                                <input class="form-control mb-3" id="txtEndDate" type="text"
+                                       placeholder="MM/DD/YYYY" aria-label="End date" maxlength="10">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="chkCurrentJob">
+                                    <label class="form-check-label" for="chkCurrentJob">I currently work here</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="txtResponsibility">Add Responsibility</label>
+                                <div class="input-group mb-3">
+                                    <input class="form-control" id="txtResponsibility" type="text"
+                                           placeholder="Built a REST API using Node.js and Express..."
+                                           aria-label="Job responsibility">
+                                    <button class="btn btn-secondary" id="btnAddResp" type="button"
+                                            aria-label="Add responsibility">
+                                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Add
+                                    </button>
+                                    <button class="btn btn-outline-info" id="btnAIResp" type="button"
+                                            aria-label="Get AI suggestion for this responsibility">
+                                        <i class="bi bi-magic" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div id="respTagContainer" aria-label="Pending responsibilities" aria-live="polite"></div>
+                            </div>
+                        </div>
+                        <hr>
+                        <button class="btn btn-primary col-12 mt-2" id="btnSaveJob" type="button">
+                            <i class="bi bi-floppy me-1" aria-hidden="true"></i>Save Job
+                        </button>
+
+                        <!-- AI Suggestion Box for Responsibility -->
+                        <div id="aiRespBox" class="mt-3 p-3 rounded border border-info bg-info bg-opacity-10"
+                             style="display:none;" role="status" aria-live="polite">
+                            <span class="badge bg-info text-dark mb-2">AI Suggestion</span>
+                            <p id="aiRespText" class="mb-2"></p>
+                            <button class="btn btn-primary col-12 mt-2" id="btnAcceptResp" type="button">
+                                Use This
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Jobs List -->
+                <h3 class="text-center mb-3 fs-5">Saved Jobs</h3>
+                <div id="jobList" aria-live="polite"></div>
+                <p id="jobEmptyMsg" class="text-center text-muted fst-italic">No jobs saved yet.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================
+         SKILLS & CERTIFICATIONS – hidden by default
+    ================================================= -->
+    <section id="sectionSkills" style="display:none;">
+        <div class="d-flex justify-content-center align-items-start py-4 min-vh-100">
+            <div class="col-11 col-md-9 col-lg-7">
+
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-stars text-info me-2" aria-hidden="true"></i>Skills and Certifications
+                </h2>
+
+                <div class="row">
+                    <!-- Skills Card -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="text-center mb-3 fs-5">Skills</h3>
+                                <div class="input-group mb-3">
+                                    <input class="form-control" id="txtSkill" type="text"
+                                           placeholder="e.g. JavaScript, SQL" aria-label="Skill name">
+                                    <select class="form-select" id="cboSkillCategory"
+                                            aria-label="Skill category" style="max-width:130px;">
+                                        <option value="Technical">Technical</option>
+                                        <option value="Soft">Soft Skills</option>
+                                        <option value="Tools">Tools</option>
+                                        <option value="Languages">Languages</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <button class="btn btn-secondary" id="btnAddSkill" type="button"
+                                            aria-label="Add skill">
+                                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div id="skillList" aria-label="Skills list" aria-live="polite"></div>
+                                <p id="skillEmptyMsg" class="text-center text-muted fst-italic small">No skills added yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Certifications Card -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="text-center mb-3 fs-5">Certifications</h3>
+                                <label class="form-label" for="txtCertName">Certification Name</label>
+                                <input class="form-control mb-3" id="txtCertName" type="text"
+                                       placeholder="Certification name" aria-label="Certification name">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label" for="txtCertIssuer">Issuing Org</label>
+                                        <input class="form-control mb-3" id="txtCertIssuer" type="text"
+                                               placeholder="e.g. AWS" aria-label="Issuing organization">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label" for="txtCertDate">Date</label>
+                                        <input class="form-control mb-3" id="txtCertDate" type="text"
+                                               placeholder="MM/DD/YYYY" aria-label="Certification date" maxlength="10">
+                                    </div>
+                                </div>
+                                <hr>
+                                <button class="btn btn-primary col-12 mt-2" id="btnAddCert" type="button">
+                                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add Certification
+                                </button>
+                                <div id="certList" aria-label="Certifications list" aria-live="polite" class="mt-3"></div>
+                                <p id="certEmptyMsg" class="text-center text-muted fst-italic small">No certifications added yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================
+         AWARDS – hidden by default
+    ================================================= -->
+    <section id="sectionAwards" style="display:none;">
+        <div class="d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card col-11 col-md-9 col-lg-7 my-4">
+                <div class="card-body">
+                    <h2 class="text-center mb-2">
+                        <i class="bi bi-trophy text-info me-2" aria-hidden="true"></i>Awards &amp; Honors
+                    </h2>
+                    <p class="text-center text-muted mb-4">Recognition, scholarships, hackathon wins — add them here.</p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label" for="txtAwardName">Award / Honor</label>
+                            <input class="form-control mb-3" id="txtAwardName" type="text"
+                                   placeholder="Dean's List" aria-label="Award or honor name">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="txtAwardOrg">Organization</label>
+                            <input class="form-control mb-3" id="txtAwardOrg" type="text"
+                                   placeholder="Tennessee Tech" aria-label="Awarding organization">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="txtAwardDate">Date</label>
+                            <input class="form-control mb-3" id="txtAwardDate" type="text"
+                                   placeholder="MM/DD/YYYY" aria-label="Award date" maxlength="10">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="txtAwardDesc">Description (optional)</label>
+                            <input class="form-control mb-3" id="txtAwardDesc" type="text"
+                                   placeholder="Brief description..." aria-label="Award description">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <button class="btn btn-primary col-12 mt-2" id="btnAddAward" type="button">
+                        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add Award
+                    </button>
+                    <div id="awardList" aria-label="Awards list" aria-live="polite" class="mt-3"></div>
+                    <p id="awardEmptyMsg" class="text-center text-muted fst-italic mt-2">No awards added yet.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================
+         RESUME PREVIEW – hidden by default
+    ================================================= -->
+    <section id="sectionPreview" style="display:none;">
+        <div class="d-flex justify-content-center align-items-start py-4 min-vh-100">
+            <div class="col-11 col-md-9 col-lg-7">
+
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-file-earmark-person text-info me-2" aria-hidden="true"></i>Resume Preview
+                </h2>
+
+                <!-- Selection Panel -->
+                <div class="card col-12 mb-4" id="sectionSelectPanel">
+                    <div class="card-body">
+                        <h3 class="text-center mb-3 fs-5">Choose What to Include</h3>
+                        <div id="jobSelectList" class="mb-3" aria-live="polite">
+                            <p class="text-center text-muted fst-italic small">Add jobs first to select them.</p>
+                        </div>
+                        <hr>
+                        <button class="btn btn-primary col-12 mt-2" id="btnBuildResume" type="button">
+                            <i class="bi bi-eye me-1" aria-hidden="true"></i>Build Preview
+                        </button>
+                        <button class="btn btn-secondary col-12 mt-2" id="printBtn" type="button"
+                                onclick="window.print()" aria-label="Print or save resume as PDF">
+                            <i class="bi bi-printer me-1" aria-hidden="true"></i>Print / Save PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resume Output -->
+                <div id="resumePreview" class="card col-12 shadow p-4 bg-white"
+                     role="document" aria-label="Resume preview" aria-live="polite">
+                    <p class="text-center text-muted fst-italic">Your resume will appear here after you click "Build Preview".</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================
+         SETTINGS – hidden by default
+    ================================================= -->
+    <section id="sectionSettings" style="display:none;">
+        <div class="d-flex justify-content-center align-items-center min-vh-100">
+            <div class="col-11 col-md-7 col-lg-5 my-4">
+
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-gear text-info me-2" aria-hidden="true"></i>Settings
+                </h2>
+
+                <!-- API Key Card -->
+                <div class="card col-12 mb-4">
+                    <div class="card-body">
+                        <h3 class="text-center mb-3 fs-5">Gemini API Key</h3>
+                        <p class="text-center text-muted small">Stored in your local SQLite database. Never committed to GitHub.</p>
+                        <label class="form-label" for="txtApiKey">API Key</label>
+                        <input class="form-control mb-3" id="txtApiKey" type="password"
+                               placeholder="AIza..." aria-label="Gemini API key">
+                        <div id="apiKeyStatus" class="mb-2" aria-live="polite"></div>
+                        <hr>
+                        <button class="btn btn-primary col-12 mt-2" id="btnSaveKey" type="button">
+                            <i class="bi bi-floppy me-1" aria-hidden="true"></i>Save Key
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clear Data Card -->
+                <div class="card col-12">
+                    <div class="card-body">
+                        <h3 class="text-center mb-3 fs-5">Data</h3>
+                        <p class="text-center text-muted small">Clear all saved resume data from SQLite. Cannot be undone.</p>
+                        <hr>
+                        <button class="btn btn-danger col-12 mt-2" id="btnClearData" type="button">
+                            <i class="bi bi-trash me-1" aria-hidden="true"></i>Clear All Data
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div><!-- /mainContent -->
+
+<!-- =====================================================
+     ATTRIBUTIONS MODAL
+====================================================== -->
+<div class="modal fade" id="modalAttributions" tabindex="-1"
+     aria-labelledby="modalAttributionsLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalAttributionsLabel">Built With Open Source</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Pretty Cool Resume Builder is made possible by these libraries:</p>
+                <ul>
+                    <li><strong>Bootstrap 5.3</strong> – CSS framework (MIT)</li>
+                    <li><strong>Bootstrap Icons 1.13</strong> – Icon set (MIT)</li>
+                    <li><strong>Express.js</strong> – Node.js web framework (MIT)</li>
+                    <li><strong>better-sqlite3</strong> – SQLite bindings (MIT)</li>
+                    <li><strong>@google/genai</strong> – Gemini AI SDK (Apache 2.0)</li>
+                    <li><strong>dotenv</strong> – Environment loader (BSD-2-Clause)</li>
+                    <li><strong>cors</strong> – CORS middleware (MIT)</li>
+                    <li><strong>SweetAlert2</strong> – accessible alert dialogs (MIT)</li>
+                </ul>
+                <p class="text-muted small mb-0">Thank you to all the developers who made their work freely available.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999;">
+    <div id="toastNotif" class="toast align-items-center text-white border-0 bg-primary"
+         role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMsg">Saved!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Close notification"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS – local copy required -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

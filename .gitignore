@@ -1,0 +1,4 @@
+.env
+vitae.db-shm
+vitae.db-wal
+node_modules/
