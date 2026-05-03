@@ -1,0 +1,85 @@
+# AI Usage Documentation
+## Pretty Cool Resume Builder — CSC3100 Final Project
+
+---
+
+## Summary of AI Usage
+
+This project used **Claude (claude.ai)** by Anthropic as the primary generative AI assistant
+during development. The following sections describe how and where AI was used.
+
+---
+
+## How AI Was Used
+
+### 1. Helped with assisting with new material
+Claude was used to help assist in making the html's the project's `nav bar`, and `attributions'. Claude also helped review the project's server.js and app.js files and align their
+coding conventions with the style used in prior class projects.
+
+### 2. Debugging and Troubleshooting
+Claude was used to help explain error messages and troubleshoot issues during development,
+including layout issues and API response handling.
+
+### 3. In-App AI Features (Gemini)
+The application itself uses the **Google Gemini API** (`gemini-2.5-flash-lite`) to provide
+two AI-powered features for the user:
+- **Professional Summary Suggestions** — the user writes a draft summary and clicks
+  "AI Suggestion" to receive an improved version from Gemini
+- **Responsibility Bullet Suggestions** — the user enters a job responsibility and clicks
+  the magic wand button to receive an improved, more impactful version from Gemini
+
+These prompts are built in `server.js` under the `/api/ai/suggest-summary` and
+`/api/ai/suggest-responsibility` routes.
+
+### 4. Code Review and Quality Checks
+Claude was used to review code for potential issues such as XSS vulnerabilities,
+input validation gaps, and general best practices.
+
+---
+
+## Where AI Assistance Appears in the Code
+
+Comments marking AI-assisted sections appear inline throughout the codebase.
+Key areas include:
+
+| File | Area | AI Role |
+|------|------|---------|
+| `server.js` | `/api/ai/suggest-summary` route | Prompt engineering for Gemini |
+| `server.js` | `/api/ai/suggest-responsibility` route | Prompt engineering for Gemini |
+| `server.js` | `getGeminiErrorMessage()` | Error mapping logic reviewed by Claude |
+| `app.js` | All `.then()/.catch()` fetch chains | Convention alignment by Claude |
+| `app.js` | `escapeHtml()` | XSS prevention approach confirmed by Claude |
+
+---
+
+## AI Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| Claude (Anthropic) | Development assistant — convention review, debugging, documentation |
+| Google Gemini API (`gemini-2.5-flash-lite`) | In-app AI features for resume content suggestions |
+
+---
+
+## Rules / Configuration
+
+No formal rules file or MCP server configuration was used. Claude was accessed through
+the standard claude.ai web interface. Prompts were conversational and iterative.
+
+---
+
+## What AI Did NOT Do
+
+- AI did not write the core application logic from scratch
+- AI did not design the database schema
+- AI did not build the HTML core structure
+- AI did not generate the resume preview or print layout logic
+- The student wrote, reviewed, and understood all code in this project
+
+---
+
+## Statement of Understanding
+
+All code in this project — including any sections assisted by AI — has been reviewed
+and is understood by the student. Any AI-generated or AI-assisted code that differs
+from what was covered in class has been researched and can be explained verbally.
