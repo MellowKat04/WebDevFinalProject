@@ -87,7 +87,7 @@ pretty-cool-resume-builder/
 │   ├── favicon.ico
 │   └── apple-touch-icon.png
 ├── vitae.db            # SQLite database (auto-created on first run)
-├── .env                # Your API key — DO NOT commit this file
+├── .env                # Your API key. DO NOT commit this file
 ├── .gitignore
 ├── package.json
 ├── AI_USAGE.md         # AI documentation
@@ -130,7 +130,7 @@ An attributions popup is available in the app by clicking
 | Bootstrap | 5.3 | MIT |
 | Bootstrap Icons | 1.13 | MIT |
 | Express.js | — | MIT |
-| better-sqlite3 | — | MIT |
+| sqlite3 | — | MIT |
 | @google/genai | — | Apache 2.0 |
 | dotenv | — | BSD-2-Clause |
 | cors | — | MIT |
