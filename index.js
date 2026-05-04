@@ -942,7 +942,9 @@ app.delete('/api/awards/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId) { blnError = true; strMessage += 'Award id must be provided.' }
+    if (!strId) 
+        { blnError = true
+            strMessage += 'Award id must be provided.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblAwards WHERE id = ?', [strId], (objErr, objExisting) => {
