@@ -579,7 +579,9 @@ function deleteJob(strId) {
     })
     .catch(objError => {
         console.error('Job delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({ 
+            title: 'Delete failed', 
+            text: objError.message, icon: 'error' })
     })
 }
 
@@ -595,7 +597,9 @@ document.querySelector('#btnAddSkill').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strName.length < 1) { blnError = true; strMessage += 'Please enter a skill name.' }
+    if(strName.length < 1) 
+        { blnError = true
+            strMessage += 'Please enter a skill name.' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Empty field', text: strMessage, icon: 'warning' })
@@ -706,7 +710,9 @@ document.querySelector('#btnAddCert').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strName.length < 1) { blnError = true; strMessage += 'Certification name is required.' }
+    if(strName.length < 1) 
+        { blnError = true
+            strMessage += 'Certification name is required.' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Empty field', text: strMessage, icon: 'warning' })
@@ -807,10 +813,14 @@ document.querySelector('#btnAddAward').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strName.length < 1) { blnError = true; strMessage += 'Award name is required.' }
+    if(strName.length < 1) 
+        { blnError = true
+            strMessage += 'Award name is required.' }
 
     if(blnError != false) {
-        Swal.fire({ title: 'Empty field', text: strMessage, icon: 'warning' })
+        Swal.fire({ 
+            title: 'Empty field', 
+            text: strMessage, icon: 'warning' })
     } else {
         fetch(`${strApiBase}/api/awards`, {
             method:  'POST',
@@ -894,7 +904,9 @@ function deleteAward(strId) {
     })
     .catch(objError => {
         console.error('Award delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({ 
+            title: 'Delete failed', 
+            text: objError.message, icon: 'error' })
     })
 }
 
