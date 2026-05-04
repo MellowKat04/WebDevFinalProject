@@ -26,12 +26,12 @@ const reDate  = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/
 async function apiRequest(strUrl, objOptions = {}) {
     const objResponse = await fetch(`${strApiBase}${strUrl}`, objOptions)
 
-    if (!objResponse.ok) {
+    if(!objResponse.ok) {
         let strMessage = `Server responded with status ${objResponse.status}`
         try {
             const objError = await objResponse.json()
             strMessage = objError.error || strMessage
-        } catch (objIgnored) {
+        } catch(objIgnored) {
             // Keep the generic message if the response is not JSON
         }
         throw new Error(strMessage)
@@ -132,7 +132,7 @@ async function loadState() {
 
 // Prevent XSS when writing user input into the DOM via innerHTML
 function escapeHtml(strInput) {
-    if (!strInput) { return '' }
+    if(!strInput) { return '' }
     return String(strInput)
         .replace(/&/g,  '&amp;')
         .replace(/</g,  '&lt;')
@@ -184,7 +184,7 @@ function showSection(strSectionId) {
     // Update sidebar link active/inactive styles
     arrNavLinks.forEach((objLink) => {
         const elLink = document.querySelector('#' + objLink.navId)
-        if (objLink.sectionId === strSectionId) {
+        if(objLink.sectionId === strSectionId) {
             elLink.style.borderLeft = '3px solid #0dcaf0'
             elLink.classList.remove('text-white-50')
             elLink.classList.add('text-white')
@@ -196,14 +196,14 @@ function showSection(strSectionId) {
     })
 
     // Rebuild the job-selection checklist whenever the user opens Resume Preview
-    if (strSectionId === 'sectionPreview') {
+    if(strSectionId === 'sectionPreview') {
         buildJobSelectList()
     }
 }
 
 // Bind each sidebar nav link to its section
 arrNavLinks.forEach((objLink) => {
-    document.querySelector('#' + objLink.navId).addEventListener('click', (e) => {
+    document.querySelector('#' + objLink.navId).addEventListener('click',(e) => {
         e.preventDefault()
         showSection(objLink.sectionId)
     })
@@ -213,7 +213,7 @@ arrNavLinks.forEach((objLink) => {
 // ATTRIBUTIONS MODAL
 // =====================================================
 
-document.querySelector('#btnAttributions').addEventListener('click', () => {
+document.querySelector('#btnAttributions').addEventListener('click',() => {
     const objModal = new bootstrap.Modal(document.querySelector('#modalAttributions'))
     objModal.show()
 })
@@ -236,7 +236,7 @@ function populatePersonalForm() {
 }
 
 // Save Personal Info — validates fields then persists to the backend
-document.querySelector('#btnSavePersonal').addEventListener('click', async () => {
+document.querySelector('#btnSavePersonal').addEventListener('click',() => {
     let strFirstName = document.querySelector('#txtFirstName').value.trim()
     let strLastName  = document.querySelector('#txtLastName').value.trim()
     let strEmail     = document.querySelector('#txtEmail').value.trim()
@@ -245,123 +245,153 @@ document.querySelector('#btnSavePersonal').addEventListener('click', async () =>
     let strLinkedIn  = document.querySelector('#txtLinkedIn').value.trim()
     let strSummary   = document.querySelector('#txtSummary').value.trim()
 
-    let blnError  = false
+    let blnError   = false
     let strMessage = ''
 
-    if (strFirstName.length < 1) 
-        { blnError = true;
-             strMessage += '<p>First name is required.</p>' }
-    if (strLastName.length  < 1)                       
-     { blnError = true; 
-        strMessage += '<p>Last name is required.</p>' }
-    if (strEmail.length     < 1)                        
-        { blnError = true; 
-            strMessage += '<p>Email is required.</p>' }
-    if (strEmail.length     > 0 && !reEmail.test(strEmail)) 
-        { blnError = true; 
-            strMessage += '<p>Email address format is invalid.</p>' }
-    if (strPhone.length     < 1)                        
-        { blnError = true;
-             strMessage += '<p>Phone number is required.</p>' }
-    if (strCity.length      < 1)                        
-        { blnError = true; 
-            strMessage += '<p>City is required.</p>' }
-    if (strLinkedIn.length  < 1)                        
-        { blnError = true; 
-            strMessage += '<p>LinkedIn URL is required.</p>' }
-    if (strSummary.length   < 1)                        
-        { blnError = true; 
-            strMessage += '<p>Professional summary is required.</p>' }
-
-    if (blnError) {
-        Swal.fire({ title: 'Please fix the following', 
-            html: strMessage, 
-            icon: 'error' })
-        return
+    if(strFirstName.length < 1) {
+        blnError = true
+        strMessage += '<p>First name is required.</p>'
+    }
+    if(strLastName.length < 1) {
+        blnError = true
+        strMessage += '<p>Last name is required.</p>'
+    }
+    if(strEmail.length < 1) {
+        blnError = true
+        strMessage += '<p>Email is required.</p>'
+    }
+    if(strEmail.length > 0 && !reEmail.test(strEmail)) {
+        blnError = true
+        strMessage += '<p>Email address format is invalid.</p>'
+    }
+    if(strPhone.length < 1) {
+        blnError = true
+        strMessage += '<p>Phone number is required.</p>'
+    }
+    if(strCity.length < 1) {
+        blnError = true
+        strMessage += '<p>City is required.</p>'
+    }
+    if(strLinkedIn.length < 1) {
+        blnError = true
+        strMessage += '<p>LinkedIn URL is required.</p>'
+    }
+    if(strSummary.length < 1) {
+        blnError = true
+        strMessage += '<p>Professional summary is required.</p>'
     }
 
-    objPersonal = {
-        firstName: strFirstName,
-        lastName:  strLastName,
-        email:     strEmail,
-        phone:     strPhone,
-        city:      strCity,
-        state:     document.querySelector('#cboState').value,
-        zip:       document.querySelector('#txtZip').value.trim(),
-        linkedin:  strLinkedIn,
-        summary:   strSummary
-    }
-
-    fetch(`${strApiBase}/api/profile`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            name:     `${strFirstName} ${strLastName}`.trim(),
-            email:    strEmail,
-            phone:    strPhone,
-            location: [strCity, objPersonal.state, objPersonal.zip].filter(Boolean).join(', '),
-            link:     strLinkedIn,
-            summary:  strSummary
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Please fix the following',
+            html: strMessage,
+            icon: 'error'
         })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
+    } else {
+        objPersonal = {
+            firstName: strFirstName,
+            lastName:  strLastName,
+            email:     strEmail,
+            phone:     strPhone,
+            city:      strCity,
+            state:     document.querySelector('#cboState').value,
+            zip:       document.querySelector('#txtZip').value.trim(),
+            linkedin:  strLinkedIn,
+            summary:   strSummary
         }
-    })
-    .then(arrProfileRows => {
-        objPersonal = mapApiProfile(arrProfileRows[0] || {})
-        Swal.fire({ title: 'Saved!', text: 'Personal information has been saved.', icon: 'success' })
-        showToast('Personal info saved!')
-    })
-    .catch(objError => {
-        console.error('Profile save failed:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+
+        fetch(`${strApiBase}/api/profile`, {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                name:     `${strFirstName} ${strLastName}`.trim(),
+                email:    strEmail,
+                phone:    strPhone,
+                location: [strCity, objPersonal.state, objPersonal.zip].filter(Boolean).join(', '),
+                link:     strLinkedIn,
+                summary:  strSummary
+            })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(arrProfileRows => {
+            objPersonal = mapApiProfile(arrProfileRows[0] || {})
+            Swal.fire({
+                title: 'Saved!',
+                text: 'Personal information has been saved.',
+                icon: 'success'
+            })
+            showToast('Personal info saved!')
+        })
+        .catch(objError => {
+            console.error('Profile save failed:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Request an AI-generated improvement to the professional summary
-document.querySelector('#btnAISummary').addEventListener('click', async () => {
+document.querySelector('#btnAISummary').addEventListener('click',() => {
     let strSummary = document.querySelector('#txtSummary').value.trim()
 
-    if (strSummary.length < 1) {
-        Swal.fire({ title: 'Nothing to improve', 
-            text: 'Please write a draft summary first.', 
-            icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strSummary.length < 1) {
+        blnError = true
+        strMessage += 'Please write a draft summary first.'
     }
 
-    // Disable the button and show a loading state while waiting
-    const elBtn   = document.querySelector('#btnAISummary')
-    elBtn.textContent = 'Thinking…'
-    elBtn.disabled    = true
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Nothing to improve',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        // Disable the button and show a loading state while waiting
+        const elBtn       = document.querySelector('#btnAISummary')
+        elBtn.textContent = 'Thinking…'
+        elBtn.disabled    = true
 
-    fetch(`${strApiBase}/api/ai/suggest-summary?text=${encodeURIComponent(strSummary)}`)
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            return result.json().then(objError => { throw new Error(objError.error || `Server responded with status ${result.status}`) })
-        }
-    })
-    .then(objData => {
-        document.querySelector('#aiSummaryText').textContent  = objData.suggestion || objData.error
-        document.querySelector('#aiSummaryBox').style.display = 'block'
-    })
-    .catch(objError => {
-        console.error('AI summary request failed:', objError)
-        Swal.fire({ title: 'AI suggestion failed', text: objError.message, icon: 'error' })
-    })
-    .finally(() => {
-        elBtn.innerHTML = '<i class="bi bi-magic me-1" aria-hidden="true"></i>AI Suggestion'
-        elBtn.disabled  = false
-    })
+        fetch(`${strApiBase}/api/ai/suggest-summary?text=${encodeURIComponent(strSummary)}`)
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                return result.json().then(objError => { throw new Error(objError.error || `Server responded with status ${result.status}`) })
+            }
+        })
+        .then(objData => {
+            document.querySelector('#aiSummaryText').textContent  = objData.suggestion || objData.error
+            document.querySelector('#aiSummaryBox').style.display = 'block'
+        })
+        .catch(objError => {
+            console.error('AI summary request failed:', objError)
+            Swal.fire({
+                title: 'AI suggestion failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+        .finally(() => {
+            elBtn.innerHTML = '<i class="bi bi-magic me-1" aria-hidden="true"></i>AI Suggestion'
+            elBtn.disabled  = false
+        })
+    }
 })
 
 // Copy the AI suggestion into the summary textarea and hide the suggestion box
-document.querySelector('#btnAcceptSummary').addEventListener('click', () => {
+document.querySelector('#btnAcceptSummary').addEventListener('click',() => {
     let strSuggestion = document.querySelector('#aiSummaryText').textContent
     document.querySelector('#txtSummary').value           = strSuggestion
     document.querySelector('#aiSummaryBox').style.display = 'none'
@@ -398,84 +428,106 @@ function removeResp(intIndex) {
 }
 
 // Stage a new responsibility bullet when the Add button is clicked
-document.querySelector('#btnAddResp').addEventListener('click', () => {
+document.querySelector('#btnAddResp').addEventListener('click',() => {
     let strResp = document.querySelector('#txtResponsibility').value.trim()
 
-    if (strResp.length < 1) {
-        Swal.fire({ title: 'Empty field', 
-            text: 'Please enter a responsibility before adding.', 
-            icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strResp.length < 1) {
+        blnError = true
+        strMessage += 'Please enter a responsibility before adding.'
     }
 
-    arrPendingResp.push(strResp)
-    document.querySelector('#txtResponsibility').value = ''
-    renderRespTags()
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Empty field',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        arrPendingResp.push(strResp)
+        document.querySelector('#txtResponsibility').value = ''
+        renderRespTags()
+    }
 })
 
 // Allow pressing Enter in the responsibility field to trigger Add
-document.querySelector('#txtResponsibility').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+document.querySelector('#txtResponsibility').addEventListener('keydown',(e) => {
+    if(e.key === 'Enter') {
         e.preventDefault()
         document.querySelector('#btnAddResp').click()
     }
 })
 
 // Request an AI-improved version of the current responsibility text
-document.querySelector('#btnAIResp').addEventListener('click', () => {
+document.querySelector('#btnAIResp').addEventListener('click',() => {
     let strResp     = document.querySelector('#txtResponsibility').value.trim()
     let strJobTitle = document.querySelector('#txtJobTitle').value.trim()
 
-    if (strResp.length < 1 && strJobTitle.length < 1) {
-        Swal.fire({ title: 'Nothing to improve', 
-            text: 'Enter a responsibility or job title first.', 
-            icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strResp.length < 1 && strJobTitle.length < 1) {
+        blnError = true
+        strMessage += 'Enter a responsibility or job title first.'
     }
 
-    const elBtn    = document.querySelector('#btnAIResp')
-    elBtn.disabled = true
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Nothing to improve',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        const elBtn    = document.querySelector('#btnAIResp')
+        elBtn.disabled = true
 
-    const strPayload = encodeURIComponent(strResp || `Responsibilities for ${strJobTitle}`)
+        const strPayload = encodeURIComponent(strResp || `Responsibilities for ${strJobTitle}`)
 
-    fetch(`${strApiBase}/api/ai/suggest-responsibility?text=${strPayload}&jobtitle=${encodeURIComponent(strJobTitle)}`)
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            return result.json().then(objError => { throw new Error(objError.error || `Server responded with status ${result.status}`) })
-        }
-    })
-    .then(objData => {
-        document.querySelector('#aiRespText').textContent  = objData.suggestion || objData.error
-        document.querySelector('#aiRespBox').style.display = 'block'
-    })
-    .catch(objError => {
-        console.error('AI responsibility request failed:', objError)
-        Swal.fire({ title: 'AI suggestion failed', text: objError.message, icon: 'error' })
-    })
-    .finally(() => {
-        elBtn.disabled = false
-    })
+        fetch(`${strApiBase}/api/ai/suggest-responsibility?text=${strPayload}&jobtitle=${encodeURIComponent(strJobTitle)}`)
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                return result.json().then(objError => { throw new Error(objError.error || `Server responded with status ${result.status}`) })
+            }
+        })
+        .then(objData => {
+            document.querySelector('#aiRespText').textContent  = objData.suggestion || objData.error
+            document.querySelector('#aiRespBox').style.display = 'block'
+        })
+        .catch(objError => {
+            console.error('AI responsibility request failed:', objError)
+            Swal.fire({
+                title: 'AI suggestion failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+        .finally(() => {
+            elBtn.disabled = false
+        })
+    }
 })
 
 // Copy the AI responsibility suggestion into the input field
-document.querySelector('#btnAcceptResp').addEventListener('click', () => {
+document.querySelector('#btnAcceptResp').addEventListener('click',() => {
     let strSuggestion = document.querySelector('#aiRespText').textContent
     document.querySelector('#txtResponsibility').value   = strSuggestion
     document.querySelector('#aiRespBox').style.display   = 'none'
 })
 
 // Disable / clear the End Date field while "I currently work here" is checked
-document.querySelector('#chkCurrentJob').addEventListener('change', function () {
+document.querySelector('#chkCurrentJob').addEventListener('change',function() {
     document.querySelector('#txtEndDate').disabled = this.checked
-    if (this.checked) {
+    if(this.checked) {
         document.querySelector('#txtEndDate').value = ''
     }
 })
 
 // Save a completed job form to arrJobs and sync to the backend
-document.querySelector('#btnSaveJob').addEventListener('click', () => {
+document.querySelector('#btnSaveJob').addEventListener('click',() => {
     let strTitle   = document.querySelector('#txtJobTitle').value.trim()
     let strCompany = document.querySelector('#txtCompany').value.trim()
     let strStart   = document.querySelector('#txtStartDate').value
@@ -485,65 +537,78 @@ document.querySelector('#btnSaveJob').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if (strTitle.length   < 1) 
-        { blnError = true; 
-            strMessage += '<p>Job title is required.</p>' }
-    if (strCompany.length < 1) 
-        { blnError = true; 
-            strMessage += '<p>Company name is required.</p>' }
-    if (strStart && !reDate.test(strStart)) 
-        { blnError = true; 
-            strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>' }
-    if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) 
-        { blnError = true; 
-            strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>' }
-
-    if (blnError) {
-        Swal.fire({ title: 'Please fix the following', 
-            html: strMessage, 
-            icon: 'error' })
-        return
+    if(strTitle.length < 1) {
+        blnError = true
+        strMessage += '<p>Job title is required.</p>'
+    }
+    if(strCompany.length < 1) {
+        blnError = true
+        strMessage += '<p>Company name is required.</p>'
+    }
+    if(strStart && !reDate.test(strStart)) {
+        blnError = true
+        strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>'
+    }
+    if(strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) {
+        blnError = true
+        strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>'
     }
 
-    fetch(`${strApiBase}/api/jobs`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            title:   strTitle,
-            company: strCompany,
-            dates:   `${strStart} \u2013 ${strEnd}`,
-            bullets: arrPendingResp
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Please fix the following',
+            html: strMessage,
+            icon: 'error'
         })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(objSavedJob => {
-        arrJobs.push(mapApiJob(objSavedJob))
+    } else {
+        fetch(`${strApiBase}/api/jobs`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                title:   strTitle,
+                company: strCompany,
+                dates:   `${strStart} \u2013 ${strEnd}`,
+                bullets: arrPendingResp
+            })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(objSavedJob => {
+            arrJobs.push(mapApiJob(objSavedJob))
 
-        // Reset the job form and staged responsibilities
-        document.querySelector('#txtJobTitle').value      = ''
-        document.querySelector('#txtCompany').value       = ''
-        document.querySelector('#txtStartDate').value     = ''
-        document.querySelector('#txtEndDate').value       = ''
-        document.querySelector('#txtEndDate').disabled    = false
-        document.querySelector('#chkCurrentJob').checked  = false
-        arrPendingResp = []
-        renderRespTags()
-        document.querySelector('#aiRespBox').style.display = 'none'
+            // Reset the job form and staged responsibilities
+            document.querySelector('#txtJobTitle').value      = ''
+            document.querySelector('#txtCompany').value       = ''
+            document.querySelector('#txtStartDate').value     = ''
+            document.querySelector('#txtEndDate').value       = ''
+            document.querySelector('#txtEndDate').disabled    = false
+            document.querySelector('#chkCurrentJob').checked  = false
+            arrPendingResp = []
+            renderRespTags()
+            document.querySelector('#aiRespBox').style.display = 'none'
 
-        renderJobList()
-        Swal.fire({ title: 'Job Saved', text: 'The job has been added to your resume.', icon: 'success' })
-        showToast('Job saved!')
-    })
-    .catch(objError => {
-        console.error('Job save failed:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+            renderJobList()
+            Swal.fire({
+                title: 'Job Saved',
+                text: 'The job has been added to your resume.',
+                icon: 'success'
+            })
+            showToast('Job saved!')
+        })
+        .catch(objError => {
+            console.error('Job save failed:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Render the list of saved jobs as cards below the Add Job form
@@ -552,7 +617,7 @@ function renderJobList() {
     const elEmptyMsg = document.querySelector('#jobEmptyMsg')
     elJobList.innerHTML = ''
 
-    if (arrJobs.length < 1) {
+    if(arrJobs.length < 1) {
         elEmptyMsg.style.display = 'block'
         return
     }
@@ -586,7 +651,7 @@ function renderJobList() {
 function deleteJob(strId) {
     fetch(`${strApiBase}/api/jobs/${encodeURIComponent(strId)}`, { method: 'DELETE' })
     .then(result => {
-        if (result.ok) {
+        if(result.ok) {
             return result.json()
         } else {
             throw new Error(result.status)
@@ -599,7 +664,11 @@ function deleteJob(strId) {
     })
     .catch(objError => {
         console.error('Job delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({
+            title: 'Delete failed',
+            text: objError.message,
+            icon: 'error'
+        })
     })
 }
 
@@ -608,42 +677,57 @@ function deleteJob(strId) {
 // =====================================================
 
 // Add a skill to arrSkills when the Add button is clicked
-document.querySelector('#btnAddSkill').addEventListener('click', () => {
+document.querySelector('#btnAddSkill').addEventListener('click',() => {
     let strName     = document.querySelector('#txtSkill').value.trim()
     let strCategory = document.querySelector('#cboSkillCategory').value
 
-    if (strName.length < 1) {
-        Swal.fire({ title: 'Empty field', text: 'Please enter a skill name.', icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strName.length < 1) {
+        blnError = true
+        strMessage += 'Please enter a skill name.'
     }
 
-    fetch(`${strApiBase}/api/skills`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name: strName, category: strCategory })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(objNewSkill => {
-        arrSkills.push(objNewSkill)
-        document.querySelector('#txtSkill').value = ''
-        renderSkillList()
-        showToast('Skill added!')
-    })
-    .catch(objError => {
-        console.error('Skill save failed:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Empty field',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        fetch(`${strApiBase}/api/skills`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name: strName, category: strCategory })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(objNewSkill => {
+            arrSkills.push(objNewSkill)
+            document.querySelector('#txtSkill').value = ''
+            renderSkillList()
+            showToast('Skill added!')
+        })
+        .catch(objError => {
+            console.error('Skill save failed:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Allow pressing Enter in the skill field to trigger Add
-document.querySelector('#txtSkill').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+document.querySelector('#txtSkill').addEventListener('keydown',(e) => {
+    if(e.key === 'Enter') {
         e.preventDefault()
         document.querySelector('#btnAddSkill').click()
     }
@@ -655,7 +739,7 @@ function renderSkillList() {
     const elEmptyMsg  = document.querySelector('#skillEmptyMsg')
     elSkillList.innerHTML = ''
 
-    if (arrSkills.length < 1) {
+    if(arrSkills.length < 1) {
         elEmptyMsg.style.display = 'block'
         return
     }
@@ -664,7 +748,7 @@ function renderSkillList() {
     // Group skills into an object keyed by category name
     const objGrouped = {}
     arrSkills.forEach((objSkill) => {
-        if (!objGrouped[objSkill.category]) {
+        if(!objGrouped[objSkill.category]) {
             objGrouped[objSkill.category] = []
         }
         objGrouped[objSkill.category].push(objSkill)
@@ -699,7 +783,7 @@ function renderSkillList() {
 function deleteSkill(strId) {
     fetch(`${strApiBase}/api/skills/${encodeURIComponent(strId)}`, { method: 'DELETE' })
     .then(result => {
-        if (result.ok) {
+        if(result.ok) {
             return result.json()
         } else {
             throw new Error(result.status)
@@ -711,45 +795,64 @@ function deleteSkill(strId) {
     })
     .catch(objError => {
         console.error('Skill delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({
+            title: 'Delete failed',
+            text: objError.message,
+            icon: 'error'
+        })
     })
 }
 
 // Add a certification to arrCerts
-document.querySelector('#btnAddCert').addEventListener('click', () => {
+document.querySelector('#btnAddCert').addEventListener('click',() => {
     let strName   = document.querySelector('#txtCertName').value.trim()
     let strIssuer = document.querySelector('#txtCertIssuer').value.trim()
     let strDate   = document.querySelector('#txtCertDate').value
 
-    if (strName.length < 1) {
-        Swal.fire({ title: 'Empty field', text: 'Certification name is required.', icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strName.length < 1) {
+        blnError = true
+        strMessage += 'Certification name is required.'
     }
 
-    fetch(`${strApiBase}/api/certifications`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name: strName, issuer: strIssuer, year: strDate })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(objNewCert => {
-        arrCerts.push(mapApiCert(objNewCert))
-        document.querySelector('#txtCertName').value   = ''
-        document.querySelector('#txtCertIssuer').value = ''
-        document.querySelector('#txtCertDate').value   = ''
-        renderCertList()
-        showToast('Certification added!')
-    })
-    .catch(objError => {
-        console.error('Certification save failed:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Empty field',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        fetch(`${strApiBase}/api/certifications`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name: strName, issuer: strIssuer, year: strDate })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(objNewCert => {
+            arrCerts.push(mapApiCert(objNewCert))
+            document.querySelector('#txtCertName').value   = ''
+            document.querySelector('#txtCertIssuer').value = ''
+            document.querySelector('#txtCertDate').value   = ''
+            renderCertList()
+            showToast('Certification added!')
+        })
+        .catch(objError => {
+            console.error('Certification save failed:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Render saved certifications as small cards
@@ -758,7 +861,7 @@ function renderCertList() {
     const elEmptyMsg = document.querySelector('#certEmptyMsg')
     elCertList.innerHTML = ''
 
-    if (arrCerts.length < 1) {
+    if(arrCerts.length < 1) {
         elEmptyMsg.style.display = 'block'
         return
     }
@@ -791,7 +894,7 @@ function renderCertList() {
 function deleteCert(strId) {
     fetch(`${strApiBase}/api/certifications/${encodeURIComponent(strId)}`, { method: 'DELETE' })
     .then(result => {
-        if (result.ok) {
+        if(result.ok) {
             return result.json()
         } else {
             throw new Error(result.status)
@@ -803,7 +906,11 @@ function deleteCert(strId) {
     })
     .catch(objError => {
         console.error('Certification delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({
+            title: 'Delete failed',
+            text: objError.message,
+            icon: 'error'
+        })
     })
 }
 
@@ -812,42 +919,57 @@ function deleteCert(strId) {
 // =====================================================
 
 // Add an award to arrAwards
-document.querySelector('#btnAddAward').addEventListener('click', () => {
+document.querySelector('#btnAddAward').addEventListener('click',() => {
     let strName = document.querySelector('#txtAwardName').value.trim()
     let strOrg  = document.querySelector('#txtAwardOrg').value.trim()
     let strDate = document.querySelector('#txtAwardDate').value
     let strDesc = document.querySelector('#txtAwardDesc').value.trim()
 
-    if (strName.length < 1) {
-        Swal.fire({ title: 'Empty field', text: 'Award name is required.', icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strName.length < 1) {
+        blnError = true
+        strMessage += 'Award name is required.'
     }
 
-    fetch(`${strApiBase}/api/awards`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name: strName, org: strOrg, year: strDate, description: strDesc })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(objNewAward => {
-        arrAwards.push(mapApiAward(objNewAward))
-        document.querySelector('#txtAwardName').value = ''
-        document.querySelector('#txtAwardOrg').value  = ''
-        document.querySelector('#txtAwardDate').value = ''
-        document.querySelector('#txtAwardDesc').value = ''
-        renderAwardList()
-        showToast('Award added!')
-    })
-    .catch(objError => {
-        console.error('Award save failed:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Empty field',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        fetch(`${strApiBase}/api/awards`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name: strName, org: strOrg, year: strDate, description: strDesc })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(objNewAward => {
+            arrAwards.push(mapApiAward(objNewAward))
+            document.querySelector('#txtAwardName').value = ''
+            document.querySelector('#txtAwardOrg').value  = ''
+            document.querySelector('#txtAwardDate').value = ''
+            document.querySelector('#txtAwardDesc').value = ''
+            renderAwardList()
+            showToast('Award added!')
+        })
+        .catch(objError => {
+            console.error('Award save failed:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Render saved awards as small cards
@@ -856,7 +978,7 @@ function renderAwardList() {
     const elEmptyMsg  = document.querySelector('#awardEmptyMsg')
     elAwardList.innerHTML = ''
 
-    if (arrAwards.length < 1) {
+    if(arrAwards.length < 1) {
         elEmptyMsg.style.display = 'block'
         return
     }
@@ -892,7 +1014,7 @@ function renderAwardList() {
 function deleteAward(strId) {
     fetch(`${strApiBase}/api/awards/${encodeURIComponent(strId)}`, { method: 'DELETE' })
     .then(result => {
-        if (result.ok) {
+        if(result.ok) {
             return result.json()
         } else {
             throw new Error(result.status)
@@ -904,7 +1026,11 @@ function deleteAward(strId) {
     })
     .catch(objError => {
         console.error('Award delete failed:', objError)
-        Swal.fire({ title: 'Delete failed', text: objError.message, icon: 'error' })
+        Swal.fire({
+            title: 'Delete failed',
+            text: objError.message,
+            icon: 'error'
+        })
     })
 }
 
@@ -917,7 +1043,7 @@ function buildJobSelectList() {
     const elContainer = document.querySelector('#jobSelectList')
     elContainer.innerHTML = ''
 
-    if (arrJobs.length < 1) {
+    if(arrJobs.length < 1) {
         elContainer.innerHTML = '<p class="text-muted fst-italic small">Add jobs first to select them.</p>'
         return
     }
@@ -950,7 +1076,7 @@ function buildJobSelectList() {
 }
 
 // Assemble the resume HTML from saved data and selected responsibilities
-document.querySelector('#btnBuildResume').addEventListener('click', () => {
+document.querySelector('#btnBuildResume').addEventListener('click',() => {
     const elPreview = document.querySelector('#resumePreview')
     let strHTML     = ''
 
@@ -958,10 +1084,10 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
     const objSelectedResps = {}
     document.querySelectorAll('[data-jobid]').forEach((elCheckbox) => {
         let strJobId = elCheckbox.getAttribute('data-jobid')
-        if (!objSelectedResps[strJobId]) {
+        if(!objSelectedResps[strJobId]) {
             objSelectedResps[strJobId] = []
         }
-        if (elCheckbox.checked) {
+        if(elCheckbox.checked) {
             objSelectedResps[strJobId].push(parseInt(elCheckbox.value))
         }
     })
@@ -979,19 +1105,19 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
         <hr />`
 
     // Professional Summary
-    if (objPersonal.summary) {
+    if(objPersonal.summary) {
         strHTML += `
             <p class="text-uppercase fw-bold mb-1" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Summary</p>
             <p style="font-size:small;">${escapeHtml(objPersonal.summary)}</p>`
     }
 
-    // Work Experience, only include jobs with at least one selected responsibility
+    // Work Experience — only include jobs with at least one selected responsibility
     const arrJobsWithContent = arrJobs.filter((objJob) => {
         let arrSelected = objSelectedResps[objJob.id] || []
         return arrSelected.length > 0
     })
 
-    if (arrJobsWithContent.length > 0) {
+    if(arrJobsWithContent.length > 0) {
         strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Work Experience</p>`
 
         arrJobsWithContent.forEach((objJob) => {
@@ -1013,12 +1139,12 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
     }
 
     // Skills grouped by category
-    if (arrSkills.length > 0) {
+    if(arrSkills.length > 0) {
         strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Skills</p>`
 
         const objGrouped = {}
         arrSkills.forEach((objSkill) => {
-            if (!objGrouped[objSkill.category]) { objGrouped[objSkill.category] = [] }
+            if(!objGrouped[objSkill.category]) { objGrouped[objSkill.category] = [] }
             objGrouped[objSkill.category].push(objSkill.name)
         })
 
@@ -1030,7 +1156,7 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
     }
 
     // Certifications
-    if (arrCerts.length > 0) {
+    if(arrCerts.length > 0) {
         strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Certifications</p>`
 
         arrCerts.forEach((objCert) => {
@@ -1043,7 +1169,7 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
     }
 
     // Awards & Honors
-    if (arrAwards.length > 0) {
+    if(arrAwards.length > 0) {
         strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Awards and Honors</p>`
 
         arrAwards.forEach((objAward) => {
@@ -1065,40 +1191,55 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
 // =====================================================
 
 // Save the Gemini API key to the backend
-document.querySelector('#btnSaveKey').addEventListener('click', () => {
+document.querySelector('#btnSaveKey').addEventListener('click',() => {
     let strKey = document.querySelector('#txtApiKey').value.trim()
 
-    if (strKey.length < 1) {
-        Swal.fire({ title: 'Empty field', text: 'Please enter an API key.', icon: 'warning' })
-        return
+    let blnError   = false
+    let strMessage = ''
+
+    if(strKey.length < 1) {
+        blnError = true
+        strMessage += 'Please enter an API key.'
     }
 
-    fetch(`${strApiBase}/api/profile`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ apiKey: strKey })
-    })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(arrProfileRows => {
-        objPersonal = mapApiProfile(arrProfileRows[0] || {})
-        document.querySelector('#apiKeyStatus').innerHTML =
-            '<span class="text-success" style="font-size:small;"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>API key saved.</span>'
-        showToast('API key saved!')
-    })
-    .catch(objError => {
-        console.error('Could not save API key to backend:', objError)
-        Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
-    })
+    if(blnError != false) {
+        Swal.fire({
+            title: 'Empty field',
+            text: strMessage,
+            icon: 'warning'
+        })
+    } else {
+        fetch(`${strApiBase}/api/profile`, {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ apiKey: strKey })
+        })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(arrProfileRows => {
+            objPersonal = mapApiProfile(arrProfileRows[0] || {})
+            document.querySelector('#apiKeyStatus').innerHTML =
+                '<span class="text-success" style="font-size:small;"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>API key saved.</span>'
+            showToast('API key saved!')
+        })
+        .catch(objError => {
+            console.error('Could not save API key to backend:', objError)
+            Swal.fire({
+                title: 'Save failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // Clear all resume data from SQLite after user confirms
-document.querySelector('#btnClearData').addEventListener('click', async () => {
+document.querySelector('#btnClearData').addEventListener('click',async() => {
     const objResult = await Swal.fire({
         title:              'Are you sure?',
         text:               'This will delete all saved resume data and cannot be undone.',
@@ -1108,35 +1249,39 @@ document.querySelector('#btnClearData').addEventListener('click', async () => {
         confirmButtonText:  'Yes, clear everything'
     })
 
-    if (!objResult.isConfirmed) { return }
+    if(objResult.isConfirmed) {
+        fetch(`${strApiBase}/api/data`, { method: 'DELETE' })
+        .then(result => {
+            if(result.ok) {
+                return result.json()
+            } else {
+                throw new Error(result.status)
+            }
+        })
+        .then(() => {
+            objPersonal    = {}
+            arrJobs        = []
+            arrSkills      = []
+            arrCerts       = []
+            arrAwards      = []
+            arrPendingResp = []
 
-    fetch(`${strApiBase}/api/data`, { method: 'DELETE' })
-    .then(result => {
-        if (result.ok) {
-            return result.json()
-        } else {
-            throw new Error(result.status)
-        }
-    })
-    .then(() => {
-        objPersonal    = {}
-        arrJobs        = []
-        arrSkills      = []
-        arrCerts       = []
-        arrAwards      = []
-        arrPendingResp = []
-
-        populatePersonalForm()
-        renderJobList()
-        renderSkillList()
-        renderCertList()
-        renderAwardList()
-        showToast('All data cleared.')
-    })
-    .catch(objError => {
-        console.error('Clear data failed:', objError)
-        Swal.fire({ title: 'Clear failed', text: objError.message, icon: 'error' })
-    })
+            populatePersonalForm()
+            renderJobList()
+            renderSkillList()
+            renderCertList()
+            renderAwardList()
+            showToast('All data cleared.')
+        })
+        .catch(objError => {
+            console.error('Clear data failed:', objError)
+            Swal.fire({
+                title: 'Clear failed',
+                text: objError.message,
+                icon: 'error'
+            })
+        })
+    }
 })
 
 // =====================================================
@@ -1145,7 +1290,7 @@ document.querySelector('#btnClearData').addEventListener('click', async () => {
 async function initApp() {
     try {
         await loadState()
-    } catch (objError) {
+    } catch(objError) {
         console.error('Initial data load failed:', objError)
         Swal.fire({
             title: 'Could not load saved data',
