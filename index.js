@@ -168,8 +168,12 @@ app.get('/api/ai/suggest-summary', async (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strDraft.length < 1)    { blnError = true; strMessage += 'text query parameter is required.' }
-    if (strDraft.length > 2000) { blnError = true; strMessage += 'text must be 2000 characters or fewer.' }
+    if (strDraft.length < 1)    
+        { blnError = true
+            strMessage += 'text query parameter is required.' }
+    if (strDraft.length > 2000) 
+        { blnError = true
+            strMessage += 'text must be 2000 characters or fewer.' }
 
     if (blnError == false) {
         const strPrompt = `You are a professional resume coach helping a college student improve their resume.
@@ -204,8 +208,12 @@ app.get('/api/ai/suggest-responsibility', async (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strDraft.length < 1)    { blnError = true; strMessage += 'text query parameter is required.' }
-    if (strDraft.length > 1000) { blnError = true; strMessage += 'text must be 1000 characters or fewer.' }
+    if (strDraft.length < 1)    
+        { blnError = true
+            strMessage += 'text query parameter is required.' }
+    if (strDraft.length > 1000) 
+        { blnError = true
+            strMessage += 'text must be 1000 characters or fewer.' }
 
     if (blnError == false) {
         const strContext = strJobTitle ? ` for a ${strJobTitle} role` : ''
@@ -268,7 +276,9 @@ app.put('/api/profile', (req, res, next) => {
         let blnError   = false
         let strMessage = ''
 
-        if (strEmail && !reEmail.test(strEmail)) { blnError = true; strMessage += 'Invalid email address format.' }
+        if (strEmail && !reEmail.test(strEmail)) 
+            { blnError = true
+                strMessage += 'Invalid email address format.' }
 
         if (blnError == false) {
             db.run(
@@ -362,9 +372,15 @@ app.post('/api/jobs', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strTitle.trim().length < 1)   { blnError = true; strMessage += 'title is required.' }
-    if (strCompany.trim().length < 1) { blnError = true; strMessage += 'company is required.' }
-    if (!Array.isArray(arrBullets))   { blnError = true; strMessage += 'bullets must be an array.' }
+    if (strTitle.trim().length < 1)   
+        { blnError = true
+            strMessage += 'title is required.' }
+    if (strCompany.trim().length < 1) 
+        { blnError = true
+            strMessage += 'company is required.' }
+    if (!Array.isArray(arrBullets))   
+        { blnError = true
+            strMessage += 'bullets must be an array.' }
 
     // Validate date format if provided
     if (strDates) {
@@ -372,8 +388,12 @@ app.post('/api/jobs', (req, res, next) => {
         const strStart     = arrDateParts[0] || ''
         const strEnd       = arrDateParts[1] || ''
 
-        if (strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
-        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
+        if (strStart && !reDate.test(strStart)) 
+            { blnError = true
+                strMessage += 'Start date must be in MM/DD/YYYY format.' }
+        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) 
+            { blnError = true
+                strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
     }
 
     if (blnError == false) {
@@ -441,18 +461,30 @@ app.put('/api/jobs/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId)                       { blnError = true; strMessage += 'Invalid job id.' }
-    if (strTitle.trim().length < 1)   { blnError = true; strMessage += 'title is required.' }
-    if (strCompany.trim().length < 1) { blnError = true; strMessage += 'company is required.' }
-    if (!Array.isArray(arrBullets))   { blnError = true; strMessage += 'bullets must be an array.' }
+    if (!strId)                       
+        { blnError = true
+            strMessage += 'Invalid job id.' }
+    if (strTitle.trim().length < 1)   
+        { blnError = true
+            strMessage += 'title is required.' }
+    if (strCompany.trim().length < 1) 
+        { blnError = true
+            strMessage += 'company is required.' }
+    if (!Array.isArray(arrBullets))   
+        { blnError = true
+            strMessage += 'bullets must be an array.' }
 
     if (strDates) {
         const arrDateParts = strDates.split(/\s+\u2013\s+/)
         const strStart     = arrDateParts[0] || ''
         const strEnd       = arrDateParts[1] || ''
 
-        if (strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
-        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
+        if (strStart && !reDate.test(strStart)) 
+            { blnError = true
+                strMessage += 'Start date must be in MM/DD/YYYY format.' }
+        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) 
+            { blnError = true
+                strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
     }
 
     if (blnError == false) {
@@ -523,7 +555,9 @@ app.delete('/api/jobs/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId) { blnError = true; strMessage += 'Job id must be provided.' }
+    if (!strId) 
+        { blnError = true
+            strMessage += 'Job id must be provided.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblJobs WHERE id = ?', [strId], (objErr, objExisting) => {
@@ -572,8 +606,12 @@ app.post('/api/skills', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strName.length < 1)     { blnError = true; strMessage += 'name is required.' }
-    if (strCategory.length < 1) { blnError = true; strMessage += 'category is required.' }
+    if (strName.length < 1)     
+        { blnError = true
+            strMessage += 'name is required.' }
+    if (strCategory.length < 1) 
+        { blnError = true
+            strMessage += 'category is required.' }
 
     if (blnError == false) {
         db.run(
@@ -604,9 +642,15 @@ app.put('/api/skills/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId)                 { blnError = true; strMessage += 'Invalid skill id.' }
-    if (strName.length < 1)     { blnError = true; strMessage += 'name is required.' }
-    if (strCategory.length < 1) { blnError = true; strMessage += 'category is required.' }
+    if (!strId)                 
+        { blnError = true
+            strMessage += 'Invalid skill id.' }
+    if (strName.length < 1)     
+        { blnError = true
+            strMessage += 'name is required.' }
+    if (strCategory.length < 1) 
+        { blnError = true
+            strMessage += 'category is required.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblSkills WHERE id = ?', [strId], (objErr, objExisting) => {
@@ -640,7 +684,9 @@ app.delete('/api/skills/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId) { blnError = true; strMessage += 'Skill id must be provided.' }
+    if (!strId) 
+        { blnError = true
+            strMessage += 'Skill id must be provided.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblSkills WHERE id = ?', [strId], (objErr, objExisting) => {
@@ -691,7 +737,9 @@ app.post('/api/certifications', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+    if (strName.length < 1) 
+        { blnError = true
+            strMessage += 'name is required.' }
 
     if (blnError == false) {
         db.run(
@@ -724,8 +772,12 @@ app.put('/api/certifications/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId)             { blnError = true; strMessage += 'Invalid certification id.' }
-    if (strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+    if (!strId)             
+        { blnError = true
+            strMessage += 'Invalid certification id.' }
+    if (strName.length < 1) 
+        { blnError = true
+            strMessage += 'name is required.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblCertifications WHERE id = ?', [strId], (objErr, objExisting) => {
@@ -759,7 +811,9 @@ app.delete('/api/certifications/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId) { blnError = true; strMessage += 'Certification id must be provided.' }
+    if (!strId) 
+        { blnError = true
+            strMessage += 'Certification id must be provided.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblCertifications WHERE id = ?', [strId], (objErr, objExisting) => {
@@ -812,7 +866,9 @@ app.post('/api/awards', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+    if (strName.length < 1) 
+        { blnError = true
+            strMessage += 'name is required.' }
 
     if (blnError == false) {
         db.run(
@@ -847,8 +903,12 @@ app.put('/api/awards/:id', (req, res, next) => {
     let blnError   = false
     let strMessage = ''
 
-    if (!strId)             { blnError = true; strMessage += 'Invalid award id.' }
-    if (strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+    if (!strId)             
+        { blnError = true
+            strMessage += 'Invalid award id.' }
+    if (strName.length < 1) 
+        { blnError = true
+            strMessage += 'name is required.' }
 
     if (blnError == false) {
         db.get('SELECT id FROM tblAwards WHERE id = ?', [strId], (objErr, objExisting) => {
