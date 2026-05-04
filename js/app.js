@@ -1186,6 +1186,15 @@ document.querySelector('#btnBuildResume').addEventListener('click',() => {
     showToast('Resume preview built!')
 })
 
+document.querySelector('#printBtn').addEventListener('click', () => {
+    const objMain = document.querySelector('#mainContent')
+    // Remove the left margin offset before printing
+    objMain.style.marginLeft = '0'
+    window.print()
+    // Restore after print dialog closes
+    objMain.style.marginLeft = 'auto'
+})
+
 // =====================================================
 // SETTINGS
 // =====================================================

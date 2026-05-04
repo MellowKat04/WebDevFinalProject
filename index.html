@@ -17,7 +17,7 @@
 <!-- =====================================================
      SIDEBAR 
 ====================================================== -->
-<div id="sidebar" class="d-flex flex-column bg-dark text-white"
+<div id="sidebar" class="d-flex flex-column bg-dark text-white d-print-none"
      style="width:220px; height:100vh; position:fixed; top:0; left:0; z-index:100; border-right:1px solid rgba(255,255,255,0.15);">
 
     <!-- Brand -->
@@ -413,15 +413,16 @@
                             <i class="bi bi-eye me-1" aria-hidden="true"></i>Build Preview
                         </button>
                         <button class="btn btn-secondary col-12 mt-2" id="printBtn" type="button"
-                                onclick="window.print()" aria-label="Print or save resume as PDF">
+                                 aria-label="Print or save resume as PDF">
                             <i class="bi bi-printer me-1" aria-hidden="true"></i>Print / Save PDF
                         </button>
                     </div>
                 </div>
 
                 <!-- Resume Output -->
-                <div id="resumePreview" class="card col-12 shadow p-4 bg-white"
-                     role="document" aria-label="Resume preview" aria-live="polite">
+                <div id="resumePreview" class="card shadow-lg p-4 bg-white mx-auto"
+                        role="document" aria-label="Resume preview" aria-live="polite"
+                        style="max-width:816px;">
                     <p class="text-center text-muted fst-italic">Your resume will appear here after you click "Build Preview".</p>
                 </div>
             </div>
