@@ -519,7 +519,9 @@ document.querySelector('#btnSaveJob').addEventListener('click', () => {
         })
         .catch(objError => {
             console.error('Job save failed:', objError)
-            Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
+            Swal.fire({ 
+                title: 'Save failed', 
+                text: objError.message, icon: 'error' })
         })
     }
 })
@@ -1066,7 +1068,9 @@ document.querySelector('#btnSaveKey').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strKey.length < 1) { blnError = true; strMessage += 'Please enter an API key.' }
+    if(strKey.length < 1) 
+        { blnError = true
+            strMessage += 'Please enter an API key.' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Empty field', text: strMessage, icon: 'warning' })
