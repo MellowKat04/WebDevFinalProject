@@ -213,7 +213,7 @@ app.get('/api/ai/suggest-responsibility', async (req, res, next) => {
 
 Rewrite the following job responsibility bullet point${strContext} to be more impactful and quantifiable.
 Use a strong past-tense action verb at the start. Be specific and results-oriented. Keep it to one sentence.
-Return ONLY the improved bullet text — no explanations, no labels, no leading dash or bullet character.
+Return ONLY the improved bullet text. No explanations, no labels, no leading dash or bullet character.
 
 Draft responsibility:
 ${strDraft}`
