@@ -218,14 +218,30 @@ document.querySelector('#btnSavePersonal').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strFirstName.length < 1) { blnError = true; strMessage += '<p>First name is required.</p>' }
-    if(strLastName.length < 1)  { blnError = true; strMessage += '<p>Last name is required.</p>' }
-    if(strEmail.length < 1)     { blnError = true; strMessage += '<p>Email is required.</p>' }
-    if(strEmail.length > 0 && !reEmail.test(strEmail)) { blnError = true; strMessage += '<p>Email address format is invalid.</p>' }
-    if(strPhone.length < 1)     { blnError = true; strMessage += '<p>Phone number is required.</p>' }
-    if(strCity.length < 1)      { blnError = true; strMessage += '<p>City is required.</p>' }
-    if(strLinkedIn.length < 1)  { blnError = true; strMessage += '<p>LinkedIn URL is required.</p>' }
-    if(strSummary.length < 1)   { blnError = true; strMessage += '<p>Professional summary is required.</p>' }
+    if(strFirstName.length < 1) 
+        { blnError = true
+            strMessage += '<p>First name is required.</p>' }
+    if(strLastName.length < 1) 
+         { blnError = true
+            strMessage += '<p>Last name is required.</p>' }
+    if(strEmail.length < 1)     
+        { blnError = true
+            strMessage += '<p>Email is required.</p>' }
+    if(strEmail.length > 0 && !reEmail.test(strEmail)) 
+        { blnError = true
+            strMessage += '<p>Email address format is invalid.</p>' }
+    if(strPhone.length < 1)    
+         { blnError = true
+            strMessage += '<p>Phone number is required.</p>' }
+    if(strCity.length < 1)      
+        { blnError = true
+            strMessage += '<p>City is required.</p>' }
+    if(strLinkedIn.length < 1)  
+        { blnError = true
+            strMessage += '<p>LinkedIn URL or Portfolio is required (Or put down N/A if none).</p>' }
+    if(strSummary.length < 1)   
+        { blnError = true
+            strMessage += '<p>Professional summary is required.</p>' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Please fix the following', html: strMessage, icon: 'error' })
@@ -267,7 +283,9 @@ document.querySelector('#btnSavePersonal').addEventListener('click', () => {
         })
         .catch(objError => {
             console.error('Profile save failed:', objError)
-            Swal.fire({ title: 'Save failed', text: objError.message, icon: 'error' })
+            Swal.fire({ 
+                title: 'Save failed', 
+                text: objError.message, icon: 'error' })
         })
     }
 })
@@ -280,10 +298,14 @@ document.querySelector('#btnAISummary').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strSummary.length < 1) { blnError = true; strMessage += 'Please write a draft summary first.' }
+    if(strSummary.length < 1) 
+        { blnError = true
+            strMessage += 'Please write a draft summary first.' }
 
     if(blnError != false) {
-        Swal.fire({ title: 'Nothing to improve', text: strMessage, icon: 'warning' })
+        Swal.fire({ 
+            title: 'Nothing to improve', 
+            text: strMessage, icon: 'warning' })
     } else {
         const elBtn       = document.querySelector('#btnAISummary')
         elBtn.textContent = 'Thinking…'
@@ -356,7 +378,9 @@ document.querySelector('#btnAddResp').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strResp.length < 1) { blnError = true; strMessage += 'Please enter a responsibility before adding.' }
+    if(strResp.length < 1) 
+        { blnError = true
+            strMessage += 'Please enter a responsibility before adding.' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Empty field', text: strMessage, icon: 'warning' })
@@ -384,7 +408,9 @@ document.querySelector('#btnAIResp').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strResp.length < 1 && strJobTitle.length < 1) { blnError = true; strMessage += 'Enter a responsibility or job title first.' }
+    if(strResp.length < 1 && strJobTitle.length < 1) 
+        { blnError = true
+            strMessage += 'Enter a responsibility or job title first.' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Nothing to improve', text: strMessage, icon: 'warning' })
@@ -442,10 +468,18 @@ document.querySelector('#btnSaveJob').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if(strTitle.length < 1)   { blnError = true; strMessage += '<p>Job title is required.</p>' }
-    if(strCompany.length < 1) { blnError = true; strMessage += '<p>Company name is required.</p>' }
-    if(strStart && !reDate.test(strStart)) { blnError = true; strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>' }
-    if(strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>' }
+    if(strTitle.length < 1)   
+        { blnError = true
+            strMessage += '<p>Job title is required.</p>' }
+    if(strCompany.length < 1) 
+        { blnError = true
+            strMessage += '<p>Company name is required.</p>' }
+    if(strStart && !reDate.test(strStart)) 
+        { blnError = true
+            strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>' }
+    if(strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) 
+        { blnError = true
+            strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>' }
 
     if(blnError != false) {
         Swal.fire({ title: 'Please fix the following', html: strMessage, icon: 'error' })
