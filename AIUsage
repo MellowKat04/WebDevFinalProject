@@ -10,7 +10,7 @@ Claude assisted with building several UI components and backend features, includ
 2. Debugging and Troubleshooting
 Claude was used to help interpret error messages and troubleshoot issues during development, including layout bugs, API response handling, and general runtime errors.
 3. In-App AI Features (Gemini)
-The application itself uses the Google Gemini API (gemini-2.0-flash) to provide two AI-powered features:
+The application itself uses the Google Gemini API (gemini-2.0-flash-lite) to provide two AI-powered features:
 
 Professional Summary Suggestions — the user writes a draft summary and clicks "AI Suggestion" to receive an improved version from Gemini
 Responsibility Bullet Suggestions — the user enters a job responsibility and clicks the magic wand button to receive a more impactful, action-oriented version from Gemini
@@ -36,7 +36,7 @@ What AI Did NOT Do
 AI did not write the core application logic from scratch
 AI did not design the database schema
 AI did not build the core HTML, JavaScript, or Node.js structure
-AI did not generate the resume preview or print layout logic
+AI did not generate the resume preview or core printing logic
 All code was written, reviewed, and understood by the student
 
 
