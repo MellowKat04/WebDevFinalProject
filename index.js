@@ -685,5 +685,5 @@ app.get('*', (req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`\n✅  Pretty Cool Resume Builder: http://localhost:${PORT}\n`)
+    console.log(`\nPretty Cool Resume Builder: http://localhost:${PORT}\n`)
 })
