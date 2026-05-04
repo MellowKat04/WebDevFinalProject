@@ -82,11 +82,6 @@ db.exec(`
   );
 `)
 
-// Builds a consistent JSON error response
-function sendError(res, intStatus, strMessage) {
-    return res.status(intStatus).json({ error: strMessage })
-}
-
 // Gets the API key from the database, falls back to .env
 function getActiveApiKey() {
     const objProfile = db.prepare('SELECT api_key FROM tblProfile WHERE id = 1').get()
@@ -159,13 +154,17 @@ const reDate = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/
 // GET /api/ai/suggest-summary
 // Improves a draft professional summary using Gemini
 // Query params: text (the draft summary)
-app.get('/api/ai/suggest-summary', async (req, res) => {
+app.get('/api/ai/suggest-summary', async(req, res, next) => {
     let strDraft = (req.query.text || '').trim()
 
-    if (strDraft.length < 1)    return sendError(res, 400, 'text query parameter is required.')
-    if (strDraft.length > 2000) return sendError(res, 400, 'text must be 2000 characters or fewer.')
+    let blnError   = false
+    let strMessage = ''
 
-    const strPrompt = `You are a professional resume coach helping a college student improve their resume.
+    if(strDraft.length < 1)    { blnError = true; strMessage += 'text query parameter is required.' }
+    if(strDraft.length > 2000) { blnError = true; strMessage += 'text must be 2000 characters or fewer.' }
+
+    if(blnError == false) {
+        const strPrompt = `You are a professional resume coach helping a college student improve their resume.
 
 Rewrite the following professional summary to make it more concise, impactful, and employer-ready.
 Use active voice and strong action verbs. Keep it to 2-3 sentences.
@@ -174,28 +173,35 @@ Return ONLY the improved summary text. No explanations, no labels, no quotation 
 Draft summary:
 ${strDraft}`
 
-    try {
-        const strSuggestion = await callGemini(strPrompt)
-        res.status(200).json({ suggestion: strSuggestion })
-    } catch (objError) {
-        console.error('Gemini suggest-summary error:', objError.message)
-        const objGeminiError = getGeminiErrorMessage(objError)
-        sendError(res, objGeminiError.status, objGeminiError.message)
+        try {
+            const strSuggestion = await callGemini(strPrompt)
+            res.status(200).json({ suggestion: strSuggestion })
+        } catch(objError) {
+            console.error('Gemini suggest-summary error:', objError.message)
+            const objGeminiError = getGeminiErrorMessage(objError)
+            res.status(objGeminiError.status).json({ error: objGeminiError.message })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
     }
 })
 
 // GET /api/ai/suggest-responsibility
 // Improves a single job responsibility bullet using Gemini
 // Query params: text (the bullet draft), jobtitle (optional context)
-app.get('/api/ai/suggest-responsibility', async (req, res) => {
+app.get('/api/ai/suggest-responsibility', async(req, res, next) => {
     let strDraft    = (req.query.text     || '').trim()
     let strJobTitle = (req.query.jobtitle || '').trim()
 
-    if (strDraft.length < 1)    return sendError(res, 400, 'text query parameter is required.')
-    if (strDraft.length > 1000) return sendError(res, 400, 'text must be 1000 characters or fewer.')
+    let blnError   = false
+    let strMessage = ''
 
-    const strContext = strJobTitle ? ` for a ${strJobTitle} role` : ''
-    const strPrompt  = `You are a professional resume coach helping a college student improve their resume.
+    if(strDraft.length < 1)    { blnError = true; strMessage += 'text query parameter is required.' }
+    if(strDraft.length > 1000) { blnError = true; strMessage += 'text must be 1000 characters or fewer.' }
+
+    if(blnError == false) {
+        const strContext = strJobTitle ? ` for a ${strJobTitle} role` : ''
+        const strPrompt  = `You are a professional resume coach helping a college student improve their resume.
 
 Rewrite the following job responsibility bullet point${strContext} to be more impactful and quantifiable.
 Use a strong past-tense action verb at the start. Be specific and results-oriented. Keep it to one sentence.
@@ -204,13 +210,16 @@ Return ONLY the improved bullet text — no explanations, no labels, no leading 
 Draft responsibility:
 ${strDraft}`
 
-    try {
-        const strSuggestion = await callGemini(strPrompt)
-        res.status(200).json({ suggestion: strSuggestion })
-    } catch (objError) {
-        console.error('Gemini suggest-responsibility error:', objError.message)
-        const objGeminiError = getGeminiErrorMessage(objError)
-        sendError(res, objGeminiError.status, objGeminiError.message)
+        try {
+            const strSuggestion = await callGemini(strPrompt)
+            res.status(200).json({ suggestion: strSuggestion })
+        } catch(objError) {
+            console.error('Gemini suggest-responsibility error:', objError.message)
+            const objGeminiError = getGeminiErrorMessage(objError)
+            res.status(objGeminiError.status).json({ error: objGeminiError.message })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
     }
 })
 
@@ -219,14 +228,14 @@ ${strDraft}`
 // =====================================================
 
 // GET /api/profile — returns the single profile row as a JSON array
-app.get('/api/profile', (req, res) => {
+app.get('/api/profile', (req, res, next) => {
     const objRow = db.prepare('SELECT * FROM tblProfile WHERE id = 1').get()
     res.status(200).json([getPublicProfile(objRow)])
 })
 
 // PUT /api/profile — updates profile fields
 // Body: { name, email, phone, location, link, summary, apiKey }
-app.put('/api/profile', (req, res) => {
+app.put('/api/profile', (req, res, next) => {
     const objExisting = db.prepare('SELECT * FROM tblProfile WHERE id = 1').get()
 
     // Use existing values as defaults if not provided
@@ -238,24 +247,29 @@ app.put('/api/profile', (req, res) => {
     let strSummary  = req.body.summary  !== undefined ? req.body.summary  : objExisting.summary
     let strApiKey   = req.body.apiKey   !== undefined ? req.body.apiKey   : objExisting.api_key
 
-    // Validate email format if provided
     const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if (strEmail && !reEmail.test(strEmail)) {
-        return sendError(res, 400, 'Invalid email address format.')
+
+    let blnError   = false
+    let strMessage = ''
+
+    if(strEmail && !reEmail.test(strEmail)) { blnError = true; strMessage += 'Invalid email address format.' }
+
+    if(blnError == false) {
+        db.prepare(`
+            UPDATE tblProfile
+            SET name=?, email=?, phone=?, location=?, link=?, summary=?, api_key=?
+            WHERE id = 1
+        `).run(strName, strEmail, strPhone, strLocation, strLink, strSummary, strApiKey)
+
+        const objUpdated = db.prepare('SELECT * FROM tblProfile WHERE id = 1').get()
+        res.status(200).json([getPublicProfile(objUpdated)])
+    } else {
+        res.status(400).json({ error: strMessage })
     }
-
-    db.prepare(`
-        UPDATE tblProfile
-        SET name=?, email=?, phone=?, location=?, link=?, summary=?, api_key=?
-        WHERE id = 1
-    `).run(strName, strEmail, strPhone, strLocation, strLink, strSummary, strApiKey)
-
-    const objUpdated = db.prepare('SELECT * FROM tblProfile WHERE id = 1').get()
-    res.status(200).json([getPublicProfile(objUpdated)])
 })
 
 // DELETE /api/data — clears all resume content, keeps the profile row
-app.delete('/api/data', (req, res) => {
+app.delete('/api/data', (req, res, next) => {
     db.transaction(() => {
         db.prepare('DELETE FROM tblJob_bullets').run()
         db.prepare('DELETE FROM tblJobs').run()
@@ -273,113 +287,129 @@ app.delete('/api/data', (req, res) => {
 // =====================================================
 
 // GET /api/jobs — returns all jobs with their bullets array
-app.get('/api/jobs', (req, res) => {
+app.get('/api/jobs', (req, res, next) => {
     res.status(200).json(getJobsWithBullets())
 })
 
 // POST /api/jobs — creates a new job with optional bullet points
 // Body: { title, company, dates, bullets[] }
-app.post('/api/jobs', (req, res) => {
-    let strTitle   = req.body.title   || ''
-    let strCompany = req.body.company || ''
-    let strDates   = req.body.dates   || ''
-    let arrBullets = req.body.bullets || []
-
-    // Validate required fields
-    let blnError  = false
-    let strMessage = ''
-
-    if (!strTitle.trim())   { blnError = true; strMessage += 'title is required.' }
-    if (!strCompany.trim()) { blnError = true; strMessage += 'company is required.' }
-    if (!Array.isArray(arrBullets)) { blnError = true; strMessage += 'bullets must be an array.' }
-
-    // Validate date format if provided — "Present" is valid for current jobs
-    if (strDates) {
-        const arrDateParts = strDates.split(/\s+\u2013\s+/)
-        const strStart     = arrDateParts[0] || ''
-        const strEnd       = arrDateParts[1] || ''
-
-        if (strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
-        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
-    }
-
-    if (blnError) return sendError(res, 400, strMessage)
-
-    // Insert job and bullets together in a transaction
-    const intJobId = db.transaction(() => {
-        const objResult = db.prepare('INSERT INTO tblJobs (title, company, dates) VALUES (?, ?, ?)').run(strTitle.trim(), strCompany.trim(), strDates)
-        const intId     = objResult.lastInsertRowid
-        const stmtBullet = db.prepare('INSERT INTO tblJob_bullets (job_id, bullet, sort_order) VALUES (?, ?, ?)')
-        arrBullets.forEach((strBullet, intIndex) => {
-            if (strBullet && strBullet.trim()) stmtBullet.run(intId, strBullet.trim(), intIndex)
-        })
-        return intId
-    })()
-
-    const objJob     = db.prepare('SELECT * FROM tblJobs WHERE id = ?').get(intJobId)
-    const arrFetched = db.prepare('SELECT bullet FROM tblJob_bullets WHERE job_id = ? ORDER BY sort_order').all(intJobId).map(r => r.bullet)
-
-    res.status(201).json({ ...objJob, bullets: arrFetched })
-})
-
-// PUT /api/jobs/:id — replaces all fields and bullets for a job
-// Body: { title, company, dates, bullets[] }
-app.put('/api/jobs/:id', (req, res) => {
-    const intId    = Number(req.params.id)
-    let strTitle   = req.body.title   || ''
-    let strCompany = req.body.company || ''
-    let strDates   = req.body.dates   || ''
-    let arrBullets = req.body.bullets || []
+app.post('/api/jobs', (req, res, next) => {
+    let strTitle   = req.body.title   ? req.body.title   : ''
+    let strCompany = req.body.company ? req.body.company : ''
+    let strDates   = req.body.dates   ? req.body.dates   : ''
+    let arrBullets = req.body.bullets ? req.body.bullets : []
 
     let blnError   = false
     let strMessage = ''
 
-    if (!Number.isInteger(intId) || intId < 1) { blnError = true; strMessage += 'Invalid job id.' }
-    if (!strTitle.trim())   { blnError = true; strMessage += 'title is required.' }
-    if (!strCompany.trim()) { blnError = true; strMessage += 'company is required.' }
-    if (!Array.isArray(arrBullets)) { blnError = true; strMessage += 'bullets must be an array.' }
+    if(strTitle.trim().length < 1)   { blnError = true; strMessage += 'title is required.' }
+    if(strCompany.trim().length < 1) { blnError = true; strMessage += 'company is required.' }
+    if(!Array.isArray(arrBullets))   { blnError = true; strMessage += 'bullets must be an array.' }
 
-    if (strDates) {
+    // Validate date format if provided — "Present" is valid for current jobs
+    if(strDates) {
         const arrDateParts = strDates.split(/\s+\u2013\s+/)
         const strStart     = arrDateParts[0] || ''
         const strEnd       = arrDateParts[1] || ''
 
-        if (strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
-        if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
+        if(strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
+        if(strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
     }
 
-    if (blnError) return sendError(res, 400, strMessage)
+    if(blnError == false) {
+        // Insert job and bullets together in a transaction
+        const intJobId = db.transaction(() => {
+            const objResult  = db.prepare('INSERT INTO tblJobs (title, company, dates) VALUES (?, ?, ?)').run(strTitle.trim(), strCompany.trim(), strDates)
+            const intId      = objResult.lastInsertRowid
+            const stmtBullet = db.prepare('INSERT INTO tblJob_bullets (job_id, bullet, sort_order) VALUES (?, ?, ?)')
+            arrBullets.forEach((strBullet, intIndex) => {
+                if(strBullet && strBullet.trim()) stmtBullet.run(intId, strBullet.trim(), intIndex)
+            })
+            return intId
+        })()
 
-    const objExisting = db.prepare('SELECT id FROM tblJobs WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Job not found.')
+        const objJob     = db.prepare('SELECT * FROM tblJobs WHERE id = ?').get(intJobId)
+        const arrFetched = db.prepare('SELECT bullet FROM tblJob_bullets WHERE job_id = ? ORDER BY sort_order').all(intJobId).map(r => r.bullet)
 
-    db.transaction(() => {
-        db.prepare('UPDATE tblJobs SET title=?, company=?, dates=? WHERE id=?').run(strTitle.trim(), strCompany.trim(), strDates, intId)
-        // Delete old bullets and re-insert the updated set
-        db.prepare('DELETE FROM tblJob_bullets WHERE job_id=?').run(intId)
-        const stmtBullet = db.prepare('INSERT INTO tblJob_bullets (job_id, bullet, sort_order) VALUES (?, ?, ?)')
-        arrBullets.forEach((strBullet, intIndex) => {
-            if (strBullet && strBullet.trim()) stmtBullet.run(intId, strBullet.trim(), intIndex)
-        })
-    })()
+        res.status(201).json({ ...objJob, bullets: arrFetched })
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
+})
 
-    const objJob     = db.prepare('SELECT * FROM tblJobs WHERE id = ?').get(intId)
-    const arrFetched = db.prepare('SELECT bullet FROM tblJob_bullets WHERE job_id = ? ORDER BY sort_order').all(intId).map(r => r.bullet)
+// PUT /api/jobs/:id — replaces all fields and bullets for a job
+// Body: { title, company, dates, bullets[] }
+app.put('/api/jobs/:id', (req, res, next) => {
+    let strId      = req.params.id
+    let strTitle   = req.body.title   ? req.body.title   : ''
+    let strCompany = req.body.company ? req.body.company : ''
+    let strDates   = req.body.dates   ? req.body.dates   : ''
+    let arrBullets = req.body.bullets ? req.body.bullets : []
 
-    res.status(200).json({ ...objJob, bullets: arrFetched })
+    let blnError   = false
+    let strMessage = ''
+
+    if(!strId)                       { blnError = true; strMessage += 'Invalid job id.' }
+    if(strTitle.trim().length < 1)   { blnError = true; strMessage += 'title is required.' }
+    if(strCompany.trim().length < 1) { blnError = true; strMessage += 'company is required.' }
+    if(!Array.isArray(arrBullets))   { blnError = true; strMessage += 'bullets must be an array.' }
+
+    if(strDates) {
+        const arrDateParts = strDates.split(/\s+\u2013\s+/)
+        const strStart     = arrDateParts[0] || ''
+        const strEnd       = arrDateParts[1] || ''
+
+        if(strStart && !reDate.test(strStart)) { blnError = true; strMessage += 'Start date must be in MM/DD/YYYY format.' }
+        if(strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += 'End date must be in MM/DD/YYYY format or "Present".' }
+    }
+
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblJobs WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.transaction(() => {
+                db.prepare('UPDATE tblJobs SET title=?, company=?, dates=? WHERE id=?').run(strTitle.trim(), strCompany.trim(), strDates, strId)
+                // Delete old bullets and re-insert the updated set
+                db.prepare('DELETE FROM tblJob_bullets WHERE job_id=?').run(strId)
+                const stmtBullet = db.prepare('INSERT INTO tblJob_bullets (job_id, bullet, sort_order) VALUES (?, ?, ?)')
+                arrBullets.forEach((strBullet, intIndex) => {
+                    if(strBullet && strBullet.trim()) stmtBullet.run(strId, strBullet.trim(), intIndex)
+                })
+            })()
+
+            const objJob     = db.prepare('SELECT * FROM tblJobs WHERE id = ?').get(strId)
+            const arrFetched = db.prepare('SELECT bullet FROM tblJob_bullets WHERE job_id = ? ORDER BY sort_order').all(strId).map(r => r.bullet)
+
+            res.status(200).json({ ...objJob, bullets: arrFetched })
+        } else {
+            res.status(404).json({ error: 'Job not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // DELETE /api/jobs/:id — deletes a job by ID (cascades to bullets via FK)
-app.delete('/api/jobs/:id', (req, res) => {
-    const intId = Number(req.params.id)
+app.delete('/api/jobs/:id', (req, res, next) => {
+    let strId = req.params.id
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid job id.')
+    let blnError   = false
+    let strMessage = ''
 
-    const objExisting = db.prepare('SELECT id FROM tblJobs WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Job not found.')
+    if(!strId) { blnError = true; strMessage += 'Job id must be provided.' }
 
-    db.prepare('DELETE FROM tblJobs WHERE id=?').run(intId)
-    res.status(200).json({ success: true })
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblJobs WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('DELETE FROM tblJobs WHERE id=?').run(strId)
+            res.status(200).json({ outcome: 'success', message: `Job with id ${strId} deleted` })
+        } else {
+            res.status(404).json({ error: 'Job not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // =====================================================
@@ -387,62 +417,85 @@ app.delete('/api/jobs/:id', (req, res) => {
 // =====================================================
 
 // GET /api/skills — returns all skills
-app.get('/api/skills', (req, res) => {
+app.get('/api/skills', (req, res, next) => {
     res.status(200).json(db.prepare('SELECT * FROM tblSkills').all())
 })
 
 // POST /api/skills — creates a skill entry
 // Body: { name, category }
-app.post('/api/skills', (req, res) => {
-    let strName     = req.body.name     || ''
-    let strCategory = req.body.category || ''
+app.post('/api/skills', (req, res, next) => {
+    let strName     = req.body.name     ? req.body.name     : ''
+    let strCategory = req.body.category ? req.body.category : ''
+
+    strName     = strName.trim()
+    strCategory = strCategory.trim()
 
     let blnError   = false
     let strMessage = ''
 
-    if (!strName.trim())     { blnError = true; strMessage += 'name is required.' }
-    if (!strCategory.trim()) { blnError = true; strMessage += 'category is required.' }
+    if(strName.length < 1)     { blnError = true; strMessage += 'name is required.' }
+    if(strCategory.length < 1) { blnError = true; strMessage += 'category is required.' }
 
-    if (blnError) return sendError(res, 400, strMessage)
-
-    const objResult = db.prepare('INSERT INTO tblSkills (name, category) VALUES (?, ?)').run(strName.trim(), strCategory.trim())
-    res.status(201).json({ id: objResult.lastInsertRowid, name: strName.trim(), category: strCategory.trim() })
+    if(blnError == false) {
+        const objResult = db.prepare('INSERT INTO tblSkills (name, category) VALUES (?, ?)').run(strName, strCategory)
+        res.status(201).json({ id: objResult.lastInsertRowid, name: strName, category: strCategory })
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // PUT /api/skills/:id — updates a skill's name and category
 // Body: { name, category }
-app.put('/api/skills/:id', (req, res) => {
-    const intId     = Number(req.params.id)
-    let strName     = req.body.name     || ''
-    let strCategory = req.body.category || ''
+app.put('/api/skills/:id', (req, res, next) => {
+    let strId       = req.params.id
+    let strName     = req.body.name     ? req.body.name     : ''
+    let strCategory = req.body.category ? req.body.category : ''
+
+    strName     = strName.trim()
+    strCategory = strCategory.trim()
 
     let blnError   = false
     let strMessage = ''
 
-    if (!Number.isInteger(intId) || intId < 1) { blnError = true; strMessage += 'Invalid skill id.' }
-    if (!strName.trim())     { blnError = true; strMessage += 'name is required.' }
-    if (!strCategory.trim()) { blnError = true; strMessage += 'category is required.' }
+    if(!strId)                 { blnError = true; strMessage += 'Invalid skill id.' }
+    if(strName.length < 1)     { blnError = true; strMessage += 'name is required.' }
+    if(strCategory.length < 1) { blnError = true; strMessage += 'category is required.' }
 
-    if (blnError) return sendError(res, 400, strMessage)
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblSkills WHERE id = ?').get(strId)
 
-    const objExisting = db.prepare('SELECT id FROM tblSkills WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Skill not found.')
-
-    db.prepare('UPDATE tblSkills SET name=?, category=? WHERE id=?').run(strName.trim(), strCategory.trim(), intId)
-    res.status(200).json({ id: intId, name: strName.trim(), category: strCategory.trim() })
+        if(objExisting) {
+            db.prepare('UPDATE tblSkills SET name=?, category=? WHERE id=?').run(strName, strCategory, strId)
+            res.status(200).json({ id: strId, name: strName, category: strCategory })
+        } else {
+            res.status(404).json({ error: 'Skill not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // DELETE /api/skills/:id
-app.delete('/api/skills/:id', (req, res) => {
-    const intId = Number(req.params.id)
+app.delete('/api/skills/:id', (req, res, next) => {
+    let strId = req.params.id
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid skill id.')
+    let blnError   = false
+    let strMessage = ''
 
-    const objExisting = db.prepare('SELECT id FROM tblSkills WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Skill not found.')
+    if(!strId) { blnError = true; strMessage += 'Skill id must be provided.' }
 
-    db.prepare('DELETE FROM tblSkills WHERE id=?').run(intId)
-    res.status(200).json({ success: true })
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblSkills WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('DELETE FROM tblSkills WHERE id=?').run(strId)
+            res.status(200).json({ outcome: 'success', message: `Skill with id ${strId} deleted` })
+        } else {
+            res.status(404).json({ error: 'Skill not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // =====================================================
@@ -450,52 +503,87 @@ app.delete('/api/skills/:id', (req, res) => {
 // =====================================================
 
 // GET /api/certifications — returns all certifications
-app.get('/api/certifications', (req, res) => {
+app.get('/api/certifications', (req, res, next) => {
     res.status(200).json(db.prepare('SELECT * FROM tblCertifications').all())
 })
 
 // POST /api/certifications — creates a certification
 // Body: { name, issuer, year }
-app.post('/api/certifications', (req, res) => {
-    let strName   = req.body.name   || ''
-    let strIssuer = req.body.issuer || ''
-    let strYear   = req.body.year   || ''
+app.post('/api/certifications', (req, res, next) => {
+    let strName   = req.body.name   ? req.body.name   : ''
+    let strIssuer = req.body.issuer ? req.body.issuer : ''
+    let strYear   = req.body.year   ? req.body.year   : ''
 
-    if (!strName.trim()) return sendError(res, 400, 'name is required.')
+    strName   = strName.trim()
+    strIssuer = strIssuer.trim()
+    strYear   = strYear.trim()
 
-    const objResult = db.prepare('INSERT INTO tblCertifications (name, issuer, year) VALUES (?, ?, ?)').run(strName.trim(), strIssuer.trim(), strYear.trim())
-    res.status(201).json({ id: objResult.lastInsertRowid, name: strName.trim(), issuer: strIssuer.trim(), year: strYear.trim() })
+    let blnError   = false
+    let strMessage = ''
+
+    if(strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+
+    if(blnError == false) {
+        const objResult = db.prepare('INSERT INTO tblCertifications (name, issuer, year) VALUES (?, ?, ?)').run(strName, strIssuer, strYear)
+        res.status(201).json({ id: objResult.lastInsertRowid, name: strName, issuer: strIssuer, year: strYear })
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // PUT /api/certifications/:id — updates a certification
 // Body: { name, issuer, year }
-app.put('/api/certifications/:id', (req, res) => {
-    const intId   = Number(req.params.id)
-    let strName   = req.body.name   || ''
-    let strIssuer = req.body.issuer || ''
-    let strYear   = req.body.year   || ''
+app.put('/api/certifications/:id', (req, res, next) => {
+    let strId     = req.params.id
+    let strName   = req.body.name   ? req.body.name   : ''
+    let strIssuer = req.body.issuer ? req.body.issuer : ''
+    let strYear   = req.body.year   ? req.body.year   : ''
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid certification id.')
-    if (!strName.trim()) return sendError(res, 400, 'name is required.')
+    strName   = strName.trim()
+    strIssuer = strIssuer.trim()
+    strYear   = strYear.trim()
 
-    const objExisting = db.prepare('SELECT id FROM tblCertifications WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Certification not found.')
+    let blnError   = false
+    let strMessage = ''
 
-    db.prepare('UPDATE tblCertifications SET name=?, issuer=?, year=? WHERE id=?').run(strName.trim(), strIssuer.trim(), strYear.trim(), intId)
-    res.status(200).json({ id: intId, name: strName.trim(), issuer: strIssuer.trim(), year: strYear.trim() })
+    if(!strId)             { blnError = true; strMessage += 'Invalid certification id.' }
+    if(strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblCertifications WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('UPDATE tblCertifications SET name=?, issuer=?, year=? WHERE id=?').run(strName, strIssuer, strYear, strId)
+            res.status(200).json({ id: strId, name: strName, issuer: strIssuer, year: strYear })
+        } else {
+            res.status(404).json({ error: 'Certification not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // DELETE /api/certifications/:id
-app.delete('/api/certifications/:id', (req, res) => {
-    const intId = Number(req.params.id)
+app.delete('/api/certifications/:id', (req, res, next) => {
+    let strId = req.params.id
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid certification id.')
+    let blnError   = false
+    let strMessage = ''
 
-    const objExisting = db.prepare('SELECT id FROM tblCertifications WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Certification not found.')
+    if(!strId) { blnError = true; strMessage += 'Certification id must be provided.' }
 
-    db.prepare('DELETE FROM tblCertifications WHERE id=?').run(intId)
-    res.status(200).json({ success: true })
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblCertifications WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('DELETE FROM tblCertifications WHERE id=?').run(strId)
+            res.status(200).json({ outcome: 'success', message: `Certification with id ${strId} deleted` })
+        } else {
+            res.status(404).json({ error: 'Certification not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // =====================================================
@@ -503,62 +591,99 @@ app.delete('/api/certifications/:id', (req, res) => {
 // =====================================================
 
 // GET /api/awards — returns all awards
-app.get('/api/awards', (req, res) => {
+app.get('/api/awards', (req, res, next) => {
     res.status(200).json(db.prepare('SELECT * FROM tblAwards').all())
 })
 
 // POST /api/awards — creates an award
 // Body: { name, org, year, description }
-app.post('/api/awards', (req, res) => {
-    let strName = req.body.name        || ''
-    let strOrg  = req.body.org         || ''
-    let strYear = req.body.year        || ''
-    let strDesc = req.body.description || ''
+app.post('/api/awards', (req, res, next) => {
+    let strName = req.body.name        ? req.body.name        : ''
+    let strOrg  = req.body.org         ? req.body.org         : ''
+    let strYear = req.body.year        ? req.body.year        : ''
+    let strDesc = req.body.description ? req.body.description : ''
 
-    if (!strName.trim()) return sendError(res, 400, 'name is required.')
+    strName = strName.trim()
+    strOrg  = strOrg.trim()
+    strYear = strYear.trim()
+    strDesc = strDesc.trim()
 
-    const objResult = db.prepare('INSERT INTO tblAwards (name, org, year, description) VALUES (?, ?, ?, ?)').run(strName.trim(), strOrg.trim(), strYear.trim(), strDesc.trim())
-    res.status(201).json({ id: objResult.lastInsertRowid, name: strName.trim(), org: strOrg.trim(), year: strYear.trim(), description: strDesc.trim() })
+    let blnError   = false
+    let strMessage = ''
+
+    if(strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+
+    if(blnError == false) {
+        const objResult = db.prepare('INSERT INTO tblAwards (name, org, year, description) VALUES (?, ?, ?, ?)').run(strName, strOrg, strYear, strDesc)
+        res.status(201).json({ id: objResult.lastInsertRowid, name: strName, org: strOrg, year: strYear, description: strDesc })
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // PUT /api/awards/:id — updates an award
 // Body: { name, org, year, description }
-app.put('/api/awards/:id', (req, res) => {
-    const intId = Number(req.params.id)
-    let strName = req.body.name        || ''
-    let strOrg  = req.body.org         || ''
-    let strYear = req.body.year        || ''
-    let strDesc = req.body.description || ''
+app.put('/api/awards/:id', (req, res, next) => {
+    let strId   = req.params.id
+    let strName = req.body.name        ? req.body.name        : ''
+    let strOrg  = req.body.org         ? req.body.org         : ''
+    let strYear = req.body.year        ? req.body.year        : ''
+    let strDesc = req.body.description ? req.body.description : ''
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid award id.')
-    if (!strName.trim()) return sendError(res, 400, 'name is required.')
+    strName = strName.trim()
+    strOrg  = strOrg.trim()
+    strYear = strYear.trim()
+    strDesc = strDesc.trim()
 
-    const objExisting = db.prepare('SELECT id FROM tblAwards WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Award not found.')
+    let blnError   = false
+    let strMessage = ''
 
-    db.prepare('UPDATE tblAwards SET name=?, org=?, year=?, description=? WHERE id=?').run(strName.trim(), strOrg.trim(), strYear.trim(), strDesc.trim(), intId)
-    res.status(200).json({ id: intId, name: strName.trim(), org: strOrg.trim(), year: strYear.trim(), description: strDesc.trim() })
+    if(!strId)             { blnError = true; strMessage += 'Invalid award id.' }
+    if(strName.length < 1) { blnError = true; strMessage += 'name is required.' }
+
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblAwards WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('UPDATE tblAwards SET name=?, org=?, year=?, description=? WHERE id=?').run(strName, strOrg, strYear, strDesc, strId)
+            res.status(200).json({ id: strId, name: strName, org: strOrg, year: strYear, description: strDesc })
+        } else {
+            res.status(404).json({ error: 'Award not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // DELETE /api/awards/:id
-app.delete('/api/awards/:id', (req, res) => {
-    const intId = Number(req.params.id)
+app.delete('/api/awards/:id', (req, res, next) => {
+    let strId = req.params.id
 
-    if (!Number.isInteger(intId) || intId < 1) return sendError(res, 400, 'Invalid award id.')
+    let blnError   = false
+    let strMessage = ''
 
-    const objExisting = db.prepare('SELECT id FROM tblAwards WHERE id = ?').get(intId)
-    if (!objExisting) return sendError(res, 404, 'Award not found.')
+    if(!strId) { blnError = true; strMessage += 'Award id must be provided.' }
 
-    db.prepare('DELETE FROM tblAwards WHERE id=?').run(intId)
-    res.status(200).json({ success: true })
+    if(blnError == false) {
+        const objExisting = db.prepare('SELECT id FROM tblAwards WHERE id = ?').get(strId)
+
+        if(objExisting) {
+            db.prepare('DELETE FROM tblAwards WHERE id=?').run(strId)
+            res.status(200).json({ outcome: 'success', message: `Award with id ${strId} deleted` })
+        } else {
+            res.status(404).json({ error: 'Award not found.' })
+        }
+    } else {
+        res.status(400).json({ error: strMessage })
+    }
 })
 
 // Catch-all — serve index.html for any unmatched GET route (SPA pattern)
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
     res.sendFile(path.join(__dirname, 'index.html'))
 })
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`\n✅  Pretty Cool Resume Builder → http://localhost:${PORT}\n`)
+    console.log(`\n✅  Pretty Cool Resume Builder: http://localhost:${PORT}\n`)
 })

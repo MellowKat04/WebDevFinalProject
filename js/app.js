@@ -248,17 +248,35 @@ document.querySelector('#btnSavePersonal').addEventListener('click', async () =>
     let blnError  = false
     let strMessage = ''
 
-    if (strFirstName.length < 1)                        { blnError = true; strMessage += '<p>First name is required.</p>' }
-    if (strLastName.length  < 1)                        { blnError = true; strMessage += '<p>Last name is required.</p>' }
-    if (strEmail.length     < 1)                        { blnError = true; strMessage += '<p>Email is required.</p>' }
-    if (strEmail.length     > 0 && !reEmail.test(strEmail)) { blnError = true; strMessage += '<p>Email address format is invalid.</p>' }
-    if (strPhone.length     < 1)                        { blnError = true; strMessage += '<p>Phone number is required.</p>' }
-    if (strCity.length      < 1)                        { blnError = true; strMessage += '<p>City is required.</p>' }
-    if (strLinkedIn.length  < 1)                        { blnError = true; strMessage += '<p>LinkedIn URL is required.</p>' }
-    if (strSummary.length   < 1)                        { blnError = true; strMessage += '<p>Professional summary is required.</p>' }
+    if (strFirstName.length < 1) 
+        { blnError = true;
+             strMessage += '<p>First name is required.</p>' }
+    if (strLastName.length  < 1)                       
+     { blnError = true; 
+        strMessage += '<p>Last name is required.</p>' }
+    if (strEmail.length     < 1)                        
+        { blnError = true; 
+            strMessage += '<p>Email is required.</p>' }
+    if (strEmail.length     > 0 && !reEmail.test(strEmail)) 
+        { blnError = true; 
+            strMessage += '<p>Email address format is invalid.</p>' }
+    if (strPhone.length     < 1)                        
+        { blnError = true;
+             strMessage += '<p>Phone number is required.</p>' }
+    if (strCity.length      < 1)                        
+        { blnError = true; 
+            strMessage += '<p>City is required.</p>' }
+    if (strLinkedIn.length  < 1)                        
+        { blnError = true; 
+            strMessage += '<p>LinkedIn URL is required.</p>' }
+    if (strSummary.length   < 1)                        
+        { blnError = true; 
+            strMessage += '<p>Professional summary is required.</p>' }
 
     if (blnError) {
-        Swal.fire({ title: 'Please fix the following', html: strMessage, icon: 'error' })
+        Swal.fire({ title: 'Please fix the following', 
+            html: strMessage, 
+            icon: 'error' })
         return
     }
 
@@ -309,7 +327,9 @@ document.querySelector('#btnAISummary').addEventListener('click', async () => {
     let strSummary = document.querySelector('#txtSummary').value.trim()
 
     if (strSummary.length < 1) {
-        Swal.fire({ title: 'Nothing to improve', text: 'Please write a draft summary first.', icon: 'warning' })
+        Swal.fire({ title: 'Nothing to improve', 
+            text: 'Please write a draft summary first.', 
+            icon: 'warning' })
         return
     }
 
@@ -382,7 +402,9 @@ document.querySelector('#btnAddResp').addEventListener('click', () => {
     let strResp = document.querySelector('#txtResponsibility').value.trim()
 
     if (strResp.length < 1) {
-        Swal.fire({ title: 'Empty field', text: 'Please enter a responsibility before adding.', icon: 'warning' })
+        Swal.fire({ title: 'Empty field', 
+            text: 'Please enter a responsibility before adding.', 
+            icon: 'warning' })
         return
     }
 
@@ -405,7 +427,9 @@ document.querySelector('#btnAIResp').addEventListener('click', () => {
     let strJobTitle = document.querySelector('#txtJobTitle').value.trim()
 
     if (strResp.length < 1 && strJobTitle.length < 1) {
-        Swal.fire({ title: 'Nothing to improve', text: 'Enter a responsibility or job title first.', icon: 'warning' })
+        Swal.fire({ title: 'Nothing to improve', 
+            text: 'Enter a responsibility or job title first.', 
+            icon: 'warning' })
         return
     }
 
@@ -461,13 +485,23 @@ document.querySelector('#btnSaveJob').addEventListener('click', () => {
     let blnError   = false
     let strMessage = ''
 
-    if (strTitle.length   < 1) { blnError = true; strMessage += '<p>Job title is required.</p>' }
-    if (strCompany.length < 1) { blnError = true; strMessage += '<p>Company name is required.</p>' }
-    if (strStart && !reDate.test(strStart)) { blnError = true; strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>' }
-    if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) { blnError = true; strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>' }
+    if (strTitle.length   < 1) 
+        { blnError = true; 
+            strMessage += '<p>Job title is required.</p>' }
+    if (strCompany.length < 1) 
+        { blnError = true; 
+            strMessage += '<p>Company name is required.</p>' }
+    if (strStart && !reDate.test(strStart)) 
+        { blnError = true; 
+            strMessage += '<p>Start date must be in MM/DD/YYYY format (e.g. 06/01/2023).</p>' }
+    if (strEnd && strEnd !== 'Present' && !reDate.test(strEnd)) 
+        { blnError = true; 
+            strMessage += '<p>End date must be in MM/DD/YYYY format or left blank for current jobs.</p>' }
 
     if (blnError) {
-        Swal.fire({ title: 'Please fix the following', html: strMessage, icon: 'error' })
+        Swal.fire({ title: 'Please fix the following', 
+            html: strMessage, 
+            icon: 'error' })
         return
     }
 
@@ -951,7 +985,7 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
             <p style="font-size:small;">${escapeHtml(objPersonal.summary)}</p>`
     }
 
-    // Work Experience — only include jobs with at least one selected responsibility
+    // Work Experience, only include jobs with at least one selected responsibility
     const arrJobsWithContent = arrJobs.filter((objJob) => {
         let arrSelected = objSelectedResps[objJob.id] || []
         return arrSelected.length > 0
@@ -1010,7 +1044,7 @@ document.querySelector('#btnBuildResume').addEventListener('click', () => {
 
     // Awards & Honors
     if (arrAwards.length > 0) {
-        strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Awards &amp; Honors</p>`
+        strHTML += `<p class="text-uppercase fw-bold mb-1 mt-3" style="font-size:0.7rem; letter-spacing:0.1em; color:#0dcaf0;">Awards and Honors</p>`
 
         arrAwards.forEach((objAward) => {
             strHTML += `<p style="font-size:small; margin:0.2rem 0;">
