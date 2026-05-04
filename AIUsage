@@ -1,85 +1,44 @@
-# AI Usage Documentation
-## Pretty Cool Resume Builder — CSC3100 Final Project
+AI Usage Documentation
+Pretty Cool Resume Builder — CSC3100 Final Project
 
----
+Summary of AI Usage
+This project used Claude (claude.ai) by Anthropic as the primary generative AI assistant during development. The sections below describe how and where AI was used throughout the project.
 
-## Summary of AI Usage
+How AI Was Used
+1. New Concepts and Features
+Claude assisted with building several UI components and backend features, including the navigation bar and attribution modal. It also helped with specific JavaScript patterns that were new or outside of class material, such as date string formatting, array manipulation, XSS prevention, Toast notifications, and handling user-provided API keys. On the backend, Claude helped align the structure of server.js and app.js with the coding conventions established in prior class projects, and assisted with Gemini API integration and error handling.
+2. Debugging and Troubleshooting
+Claude was used to help interpret error messages and troubleshoot issues during development, including layout bugs, API response handling, and general runtime errors.
+3. In-App AI Features (Gemini)
+The application itself uses the Google Gemini API (gemini-2.0-flash) to provide two AI-powered features:
 
-This project used **Claude (claude.ai)** by Anthropic as the primary generative AI assistant
-during development. The following sections describe how and where AI was used.
+Professional Summary Suggestions — the user writes a draft summary and clicks "AI Suggestion" to receive an improved version from Gemini
+Responsibility Bullet Suggestions — the user enters a job responsibility and clicks the magic wand button to receive a more impactful, action-oriented version from Gemini
 
----
+These features are handled in server.js under the /api/ai/suggest-summary and /api/ai/suggest-responsibility routes.
+4. Code Review and Quality Checks
+Claude was used to review code for potential issues including XSS vulnerabilities, input validation gaps, and general best practices.
 
-## How AI Was Used
+Where AI Assistance Appears in the Code
+Comments marking AI-assisted sections appear inline throughout the codebase. Key areas include:
+FileAreaAI Roleserver.js/api/ai/suggest-summary routePrompt engineering for Geminiserver.js/api/ai/suggest-responsibility routePrompt engineering for Geminiserver.jsgetGeminiErrorMessage()Error mapping logic reviewed by Claudeapp.jsAll fetch chainsConvention alignment by Claudeapp.jsescapeHtml()XSS prevention approach confirmed by Claude
 
-### 1. Helped with assisting with new material
-Claude was used to help assist in making the html's the project's `nav bar`, and `attributions'. Claude also helped review the project's server.js and app.js files and align their
-coding conventions with the style used in prior class projects.
+AI Tools Used
+ToolPurposeClaude (Anthropic)Development assistant: convention review, debugging, and documentation
+Google Gemini API (gemini-2.0-flash-lite)
+In-app AI features for resume content suggestions
 
-### 2. Debugging and Troubleshooting
-Claude was used to help explain error messages and troubleshoot issues during development,
-including layout issues and API response handling.
+Rules and Configuration
+No formal rules file or MCP server configuration was used. Claude was accessed through the standard claude.ai web interface. All prompts were written and refined iteratively by the student, with Claude used as a sounding board rather than a code generator.
 
-### 3. In-App AI Features (Gemini)
-The application itself uses the **Google Gemini API** (`gemini-2.5-flash-lite`) to provide
-two AI-powered features for the user:
-- **Professional Summary Suggestions** — the user writes a draft summary and clicks
-  "AI Suggestion" to receive an improved version from Gemini
-- **Responsibility Bullet Suggestions** — the user enters a job responsibility and clicks
-  the magic wand button to receive an improved, more impactful version from Gemini
+What AI Did NOT Do
 
-These prompts are built in `server.js` under the `/api/ai/suggest-summary` and
-`/api/ai/suggest-responsibility` routes.
+AI did not write the core application logic from scratch
+AI did not design the database schema
+AI did not build the core HTML, JavaScript, or Node.js structure
+AI did not generate the resume preview or print layout logic
+All code was written, reviewed, and understood by the student
 
-### 4. Code Review and Quality Checks
-Claude was used to review code for potential issues such as XSS vulnerabilities,
-input validation gaps, and general best practices.
 
----
-
-## Where AI Assistance Appears in the Code
-
-Comments marking AI-assisted sections appear inline throughout the codebase.
-Key areas include:
-
-| File | Area | AI Role |
-|------|------|---------|
-| `server.js` | `/api/ai/suggest-summary` route | Prompt engineering for Gemini |
-| `server.js` | `/api/ai/suggest-responsibility` route | Prompt engineering for Gemini |
-| `server.js` | `getGeminiErrorMessage()` | Error mapping logic reviewed by Claude |
-| `app.js` | All `.then()/.catch()` fetch chains | Convention alignment by Claude |
-| `app.js` | `escapeHtml()` | XSS prevention approach confirmed by Claude |
-
----
-
-## AI Tools Used
-
-| Tool | Purpose |
-|------|---------|
-| Claude (Anthropic) | Development assistant — convention review, debugging, documentation |
-| Google Gemini API (`gemini-2.5-flash-lite`) | In-app AI features for resume content suggestions |
-
----
-
-## Rules / Configuration
-
-No formal rules file or MCP server configuration was used. Claude was accessed through
-the standard claude.ai web interface. Prompts were conversational and iterative.
-
----
-
-## What AI Did NOT Do
-
-- AI did not write the core application logic from scratch
-- AI did not design the database schema
-- AI did not build the HTML core structure
-- AI did not generate the resume preview or print layout logic
-- The student wrote, reviewed, and understood all code in this project
-
----
-
-## Statement of Understanding
-
-All code in this project — including any sections assisted by AI — has been reviewed
-and is understood by the student. Any AI-generated or AI-assisted code that differs
-from what was covered in class has been researched and can be explained verbally.
+Statement of Understanding
+All code in this project, including any sections where AI provided assistance, has been reviewed and is understood by the student. 
